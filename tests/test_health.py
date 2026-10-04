@@ -40,3 +40,11 @@ def test_rules_and_excerpts_sent_as_one_system_message():
     system = [m for m in msgs if m["role"] == "system"]
     assert len(system) == 1
     assert "SCOPE" in system[0]["content"] and "KNOWLEDGE EXCERPTS" in system[0]["content"]
+
+
+def test_sms_answers_get_short_safety_note():
+    from app.ai.guardrails import check
+    long_answer, _ = check("Tera umuti ku bigori.", "rw", has_sources=True)
+    sms_answer, flags = check("Tera umuti ku bigori.", "rw", has_sources=True, channel="sms")
+    assert "ppe_note_added" in flags
+    assert len(sms_answer) < len(long_answer) and "uturindantoki" in sms_answer

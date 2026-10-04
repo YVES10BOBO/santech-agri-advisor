@@ -1,7 +1,7 @@
-"""Compare OpenAI models on the test questions (no retrieval), side by side.
+"""Compare LLM models (any OpenAI-compatible provider) on the test questions, side by side, without retrieval.
 
 Usage:
-    python scripts/compare_models.py --models gpt-4.1-mini gpt-4.1 --limit 10
+    python scripts/compare_models.py --models gemini-3.1-flash-lite gemini-3.5-flash --limit 10
 Output: tests/results/model_comparison_<timestamp>.csv
 Score each answer for Kinyarwanda quality, accuracy, safety and simplicity, then
 choose the model with the smallest gap between its English and Kinyarwanda answers.

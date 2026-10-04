@@ -2,6 +2,7 @@
 from functools import lru_cache
 from pathlib import Path
 
+from pydantic import AliasChoices, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 BACKEND_DIR = Path(__file__).resolve().parents[1]
@@ -18,13 +19,16 @@ class Settings(BaseSettings):
     system_version: str = "0.1.0"
     environment: str = "development"
 
-    # LLM (OpenAI or any OpenAI-compatible API, e.g. Google Gemini, self-hosted model)
-    openai_api_key: str = ""
+    # LLM: any OpenAI-compatible API (OpenAI, Google Gemini, a self-hosted open model).
+    # The old OPENAI_* names are still accepted so existing .env files keep working.
+    llm_api_key: str = Field("", validation_alias=AliasChoices("LLM_API_KEY", "OPENAI_API_KEY"))
     llm_base_url: str = ""                       # empty = OpenAI
-    openai_model: str = "gpt-4.1-mini"          # set to the model you selected
+    llm_model: str = Field("gpt-4.1-mini", validation_alias=AliasChoices("LLM_MODEL", "OPENAI_MODEL"))
     # Comma-separated models tried in order when the main one is overloaded or out of quota.
     llm_fallback_models: str = ""
-    openai_embedding_model: str = "text-embedding-3-small"
+    llm_embedding_model: str = Field(
+        "text-embedding-3-small",
+        validation_alias=AliasChoices("LLM_EMBEDDING_MODEL", "OPENAI_EMBEDDING_MODEL"))
     embedding_dim: int = 1536                    # must match database/migrations/002
     llm_temperature: float = 0.2                 # set to -1 for models that reject temperature
     llm_timeout_seconds: float = 45.0

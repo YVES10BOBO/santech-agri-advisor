@@ -30,11 +30,12 @@ def session_for_phone(phone: str) -> str:
     return str(uuid.uuid5(_SESSION_NAMESPACE, phone.strip()))
 
 
-def send_sms(phone: str, message: str) -> None:
+def send_sms(phone: str, message: str) -> bool:
+    """Returns True when the gateway accepted the message."""
     s = get_settings()
     if not s.at_api_key:
         log.info("SMS (not sent, AT_API_KEY empty) to %s: %s", phone, message)
-        return
+        return False
     data = {"username": s.at_username, "to": phone, "message": message}
     if s.at_sender_id:
         data["from"] = s.at_sender_id
@@ -43,12 +44,19 @@ def send_sms(phone: str, message: str) -> None:
         r = httpx.post(url, data=data, timeout=20,
                        headers={"apiKey": s.at_api_key, "Accept": "application/json"})
         r.raise_for_status()
-    except httpx.HTTPError:
+        recipients = r.json().get("SMSMessageData", {}).get("Recipients", [])
+    except (httpx.HTTPError, ValueError):
         log.exception("Sending SMS to %s failed.", phone)
+        return False
+    if not recipients or recipients[0].get("status") != "Success":
+        log.error("SMS to %s not accepted: %s", phone, recipients or r.text[:200])
+        return False
+    return True
 
 
-def answer_by_sms(phone: str, question: str, language: Optional[str]) -> None:
+def answer_by_sms(phone: str, question: str, language: Optional[str]) -> bool:
     """Runs after the gateway has been answered: AI answer, then reply by SMS."""
     res = answer_question(AskRequest(question=question, language=language,
                                      session_id=session_for_phone(phone), channel="sms"))
-    send_sms(phone, res.answer)
+    log.info("SMS answer (%d characters):\n%s", len(res.answer), res.answer)
+    return send_sms(phone, res.answer)

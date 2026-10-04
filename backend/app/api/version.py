@@ -11,6 +11,6 @@ router = APIRouter(tags=["system"])
 @router.get("/version", response_model=VersionResponse)
 def version() -> VersionResponse:
     s = get_settings()
-    return VersionResponse(system_version=s.system_version, model=s.openai_model,
-                           embedding_model=s.openai_embedding_model,
+    return VersionResponse(system_version=s.system_version, model=s.llm_model,
+                           embedding_model=s.llm_embedding_model,
                            prompt_version=PROMPT_VERSION)

@@ -11,7 +11,7 @@ from typing import Optional
 from app.ai.context import QuestionContext
 from app.db.models import RetrievedChunk
 
-PROMPT_VERSION = "p-0.3.1"
+PROMPT_VERSION = "p-0.3.2"
 
 RWANDA_TZ = timezone(timedelta(hours=2))
 
@@ -43,6 +43,9 @@ TODAY
 LANGUAGE
 - Answer ONLY in {language}. Use simple, everyday words a farmer understands. No jargon.
 - In Kinyarwanda, use the common local names for crops, pests, inputs and tools.
+  Call the extension officer "umujyanama w'ubuhinzi" and the sector agronomist
+  "agronome w'umurenge". Protective equipment is "uturindantoki n'agapfukamunwa"
+  (gloves and mask).
 
 ANSWER STRUCTURE (plain text, no headings, no bold, no tables)
 1. Start with a direct answer in one or two sentences. If the farmer asks about several

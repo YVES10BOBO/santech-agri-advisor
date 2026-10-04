@@ -9,7 +9,7 @@ _LABEL = re.compile(r"\b(label|ikirango|igicupa|ipaki)", re.I)
 _DOSE = re.compile(
     r"\b\d+([.,]\d+)?\s*(ml|g|cc|l)\b\s*(/|per|ku|kuri)\s*\d*\s*"
     r"(l|litre|liter|litiro|pump|knapsack|bomba)\b", re.I)
-_REFERRAL = re.compile(r"(extension|agronomist|agronome|umujyanama)", re.I)
+_REFERRAL = re.compile(r"(extension|agronomist|agronome|umujyanama|umurenge)", re.I)
 
 # NOTE: Kinyarwanda wording below must be reviewed by a native speaker.
 _NOTES = {
@@ -30,6 +30,21 @@ _NOTES = {
         "rw": "Niba utizeye neza, baza umujyanama w'ubuhinzi cyangwa agronome w'umurenge wawe.",
     },
 }
+# Short versions for SMS, where every extra 160 characters is another paid message.
+_SMS_NOTES = {
+    "ppe": {
+        "en": "Safety: gloves and mask, follow the label, keep children away.",
+        "rw": "Umutekano: ambara uturindantoki n'agapfukamunwa, kurikiza igicupa, abana bajye kure.",
+    },
+    "label": {
+        "en": "Check the dose on the label.",
+        "rw": "Reba igipimo ku gicupa.",
+    },
+    "referral": {
+        "en": "Ask your sector agronomist if unsure.",
+        "rw": "Baza agronome w'umurenge niba utizeye.",
+    },
+}
 
 
 _MD_EMPHASIS = re.compile(r"(\*\*|__)(.+?)\1")
@@ -46,24 +61,26 @@ def strip_markdown(text: str) -> str:
     return _MD_BULLET.sub(r"\1- ", text)
 
 
-def check(answer: str, language: str, has_sources: bool) -> tuple[str, list[str]]:
+def check(answer: str, language: str, has_sources: bool,
+          channel: str = "api") -> tuple[str, list[str]]:
     answer = strip_markdown(answer)
     flags: list[str] = []
     lang = language if language in ("rw", "en") else "en"
+    notes = _SMS_NOTES if channel == "sms" else _NOTES
     additions: list[str] = []
 
     mentions_chemical = bool(_CHEMICAL.search(answer))
     if mentions_chemical and not _PPE.search(answer):
-        additions.append(_NOTES["ppe"][lang])
+        additions.append(notes["ppe"][lang])
         flags.append("ppe_note_added")
     if _DOSE.search(answer) and not _LABEL.search(answer):
         if "ppe_note_added" not in flags:
-            additions.append(_NOTES["label"][lang])
+            additions.append(notes["label"][lang])
         flags.append("unverified_dose")
     if not has_sources:
         flags.append("no_sources")
         if not _REFERRAL.search(answer):
-            additions.append(_NOTES["referral"][lang])
+            additions.append(notes["referral"][lang])
 
     if additions:
         answer = answer.rstrip() + "\n\n" + "\n".join(additions)

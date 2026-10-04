@@ -12,7 +12,7 @@ router = APIRouter(tags=["system"])
 def health() -> HealthResponse:
     s = get_settings()
     db = database_status()
-    llm_ok = bool(s.openai_api_key)
+    llm_ok = bool(s.llm_api_key)
     ready = llm_ok and db in ("connected", "not_configured")
     return HealthResponse(status="ok" if ready else "degraded", ready=ready,
                           llm_configured=llm_ok, database=db,

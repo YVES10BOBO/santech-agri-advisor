@@ -7,7 +7,7 @@ from pathlib import Path
 os.environ.update({
     "API_ACCESS_KEY": "",
     "DATABASE_URL": "",
-    "OPENAI_API_KEY": "test-key",
+    "LLM_API_KEY": "test-key",
     "LLM_BASE_URL": "",
     "LLM_REASONING_EFFORT": "",
     "CHANNEL_WEBHOOK_TOKEN": "",

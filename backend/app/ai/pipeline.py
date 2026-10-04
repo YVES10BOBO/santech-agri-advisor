@@ -81,6 +81,7 @@ def answer_question(req: AskRequest) -> AskResponse:
     chunks: list[RetrievedChunk] = []
     flags: list[str] = [] if req.channel == "api" else [f"channel:{req.channel}"]
     status = "ok"
+    answered_by = s.llm_model
     # Short SMS answers are cached separately from full answers.
     cache_lang = f"{language}-sms" if req.channel == "sms" else language
     history_answer = None
@@ -101,9 +102,11 @@ def answer_question(req: AskRequest) -> AskResponse:
             messages = build_messages(question, language, ctx, chunks, history,
                                       find_glossary_terms(question), req.channel)
             raw = llm.chat(messages)
+            answered_by = llm.last_model()
             if not raw:
                 raise RuntimeError("Empty answer from LLM.")
-            answer, guard_flags = guardrails.check(raw, language, has_sources=bool(chunks))
+            answer, guard_flags = guardrails.check(raw, language, has_sources=bool(chunks),
+                                                   channel=req.channel)
             # Memory keeps the answer without the added safety/referral notes; otherwise
             # the model copies those notes into every later answer of the conversation.
             history_answer = guardrails.strip_markdown(raw)
@@ -124,7 +127,7 @@ def answer_question(req: AskRequest) -> AskResponse:
     log_request({
         "request_id": request_id, "session_id": session_id, "question": question,
         "answer": answer, "language": language, "crop": ctx.crop,
-        "dimension": ctx.dimension, "model": s.openai_model,
+        "dimension": ctx.dimension, "model": answered_by,
         "system_version": s.system_version, "prompt_version": PROMPT_VERSION,
         "latency_ms": latency_ms, "retrieved_chunk_ids": [c.id for c in chunks],
         "flags": flags, "status": status,
@@ -132,7 +135,7 @@ def answer_question(req: AskRequest) -> AskResponse:
 
     return AskResponse(
         request_id=request_id, session_id=session_id, answer=answer, language=language,
-        crop=ctx.crop, dimension=ctx.dimension, sources=sources, model=s.openai_model,
+        crop=ctx.crop, dimension=ctx.dimension, sources=sources, model=answered_by,
         system_version=s.system_version, prompt_version=PROMPT_VERSION,
         latency_ms=latency_ms, flags=flags,
     )
