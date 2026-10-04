@@ -20,6 +20,7 @@ DIMENSIONS = {
     "fertilizer_inputs": ["fertili", "dap", "urea", "npk", "17-17-17", "manure", "compost",
                           "ifumbire", "fumbire", "imborera", "mborera", "mvaruganda", "inyongeramusaruro"],
     "seeds_planting": ["seed", "planting", "sow", "variety", "spacing", "when to plant",
+                       "should i plant", "can i plant", "plant maize", "plant beans", "plant potato",
                        "imbuto", "mbuto", "gutera", "guhinga", "ubwoko"],
     "pest_disease": ["pest", "disease", "armyworm", "blight", "worm", "insect", "spots",
                      "rot", "wilt", "caterpillar", "holes", "indwara", "ibyonnyi",

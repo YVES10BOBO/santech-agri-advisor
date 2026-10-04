@@ -39,6 +39,10 @@ class Settings(BaseSettings):
     api_access_key: str = ""
 
     # Retrieval
+    # Kinyarwanda questions are also searched in English, because most documents are
+    # in English and a Kinyarwanda query mostly matches Kinyarwanda text only.
+    translate_queries: bool = True
+    llm_translate_reasoning_effort: str = "none"
     retrieval_top_k: int = 5
     retrieval_min_similarity: float = 0.25
 

@@ -7,7 +7,7 @@ import time
 import uuid
 
 from app.ai import guardrails, llm, memory, retriever
-from app.ai.context import extract_context
+from app.ai.context import QuestionContext, extract_context
 from app.ai.language import detect_language, find_glossary_terms
 from app.ai.prompts import PROMPT_VERSION, build_messages
 from app.config import get_settings
@@ -35,6 +35,27 @@ def _valid_uuid(value: str | None) -> str:
         return str(uuid.UUID(value)) if value else str(uuid.uuid4())
     except ValueError:
         return str(uuid.uuid4())
+
+
+def _search(query: str, language: str, ctx: QuestionContext,
+            flags: list[str]) -> list[RetrievedChunk]:
+    """Knowledge search. Kinyarwanda questions are searched in Kinyarwanda and in English
+    (most documents are English); the English text also helps detect crop and topic."""
+    queries = [query]
+    if language == "rw" and get_settings().translate_queries:
+        try:
+            english = llm.translate_to_english(query)
+        except Exception:
+            log.exception("Query translation failed; searching in Kinyarwanda only.")
+            english = ""
+        if english:
+            queries.append(english)
+            flags.append("query_translated")
+            en_ctx = extract_context(english)
+            ctx.crop = ctx.crop or en_ctx.crop
+            ctx.dimension = ctx.dimension or en_ctx.dimension
+            ctx.season = ctx.season or en_ctx.season
+    return retriever.retrieve_many(llm.embed(queries), ctx.crop)
 
 
 def answer_question(req: AskRequest) -> AskResponse:
@@ -72,8 +93,7 @@ def answer_question(req: AskRequest) -> AskResponse:
         else:
             if get_pool() is not None:
                 try:
-                    embedding = llm.embed([retrieval_query])[0]
-                    chunks = retriever.retrieve(embedding, ctx.crop)
+                    chunks = _search(retrieval_query, language, ctx, flags)
                 except Exception as exc:
                     # Search failing (e.g. embedding quota) should not block the answer.
                     log.exception("Retrieval failed; answering without knowledge excerpts.")

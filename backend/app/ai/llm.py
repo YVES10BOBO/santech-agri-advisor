@@ -26,16 +26,18 @@ def get_client() -> OpenAI:
     return _client
 
 
-def chat(messages: list[dict], model: Optional[str] = None) -> str:
+def chat(messages: list[dict], model: Optional[str] = None,
+         reasoning_effort: Optional[str] = None) -> str:
     """Asks the main model; if it is overloaded or out of quota, tries the fallback models."""
     s = get_settings()
     models = [model] if model else [s.openai_model, *s.fallback_model_list]
+    effort = reasoning_effort or s.llm_reasoning_effort
     for i, name in enumerate(models):
         kwargs = {"model": name, "messages": messages}
         if s.llm_temperature >= 0:
             kwargs["temperature"] = s.llm_temperature
-        if s.llm_reasoning_effort:
-            kwargs["reasoning_effort"] = s.llm_reasoning_effort
+        if effort:
+            kwargs["reasoning_effort"] = effort
         try:
             resp = get_client().chat.completions.create(**kwargs)
             return (resp.choices[0].message.content or "").strip()
@@ -45,6 +47,19 @@ def chat(messages: list[dict], model: Optional[str] = None) -> str:
             log.warning("Model %s unavailable (%s); trying %s.",
                         name, type(exc).__name__, models[i + 1])
     return ""
+
+
+_TRANSLATE_PROMPT = (
+    "Translate this Kinyarwanda farming question into English for a document search. "
+    "Keep crop, pest, disease and product names. Reply with the English text only.")
+
+
+def translate_to_english(text: str) -> str:
+    """Short, fast translation used only to search English documents."""
+    s = get_settings()
+    return chat([{"role": "system", "content": _TRANSLATE_PROMPT},
+                 {"role": "user", "content": text}],
+                reasoning_effort=s.llm_translate_reasoning_effort or None).strip()
 
 
 def embed(texts: list[str]) -> list[list[float]]:
