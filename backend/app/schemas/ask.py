@@ -26,6 +26,16 @@ class Source(BaseModel):
     similarity: float
 
 
+class PhotoDiagnosis(BaseModel):
+    """What the image check saw in the farmer's photo (automatic; may be wrong)."""
+    is_plant: bool
+    crop: Optional[str] = None
+    problem: str
+    alternatives: list[str] = []
+    confidence: Literal["high", "medium", "low"]
+    symptoms: str = ""
+
+
 class AskResponse(BaseModel):
     request_id: str
     session_id: str
@@ -39,3 +49,4 @@ class AskResponse(BaseModel):
     prompt_version: str
     latency_ms: int
     flags: list[str] = []
+    photo: Optional[PhotoDiagnosis] = None

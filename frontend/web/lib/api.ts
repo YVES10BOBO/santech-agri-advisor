@@ -16,3 +16,22 @@ export async function askQuestion(
   }
   return res.json();
 }
+
+export async function askWithPhoto(
+  photo: File,
+  question: string,
+  language: Language,
+  sessionId: string | null,
+): Promise<AskResponse> {
+  const form = new FormData();
+  form.append("image", photo);
+  form.append("question", question);
+  form.append("language", language);
+  if (sessionId) form.append("session_id", sessionId);
+  const res = await fetch("/api/ask-image", { method: "POST", body: form });
+  if (!res.ok) {
+    const detail = await res.text();
+    throw new Error(`Request failed (${res.status}): ${detail}`);
+  }
+  return res.json();
+}

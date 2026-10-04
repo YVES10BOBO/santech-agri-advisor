@@ -5,6 +5,7 @@ question → language → context → history → retrieval → LLM → guardrai
 import logging
 import time
 import uuid
+from typing import Optional
 
 from app.ai import guardrails, llm, memory, retriever
 from app.ai.context import QuestionContext, extract_context
@@ -58,7 +59,8 @@ def _search(query: str, language: str, ctx: QuestionContext,
     return retriever.retrieve_many(llm.embed(queries), ctx.crop)
 
 
-def answer_question(req: AskRequest) -> AskResponse:
+def answer_question(req: AskRequest, photo_note: Optional[str] = None) -> AskResponse:
+    """photo_note: the photo diagnosis text when the farmer sent a photo (see vision.py)."""
     s = get_settings()
     start = time.perf_counter()
     request_id = str(uuid.uuid4())
@@ -77,9 +79,18 @@ def answer_question(req: AskRequest) -> AskResponse:
         ctx.dimension = ctx.dimension or prev_ctx.dimension
         ctx.season = ctx.season or prev_ctx.season
     retrieval_query = f"{previous}\n{question}" if previous else question
+    if photo_note:
+        # The photo tells us the crop and problem; it also guides the document search.
+        photo_ctx = extract_context(photo_note)
+        ctx.crop = photo_ctx.crop or ctx.crop
+        ctx.dimension = "pest_disease"
+        retrieval_query = f"{question}\n{photo_note}"
+    model_question = f"{question}\n\n{photo_note}" if photo_note else question
 
     chunks: list[RetrievedChunk] = []
     flags: list[str] = [] if req.channel == "api" else [f"channel:{req.channel}"]
+    if photo_note:
+        flags.append("photo")
     status = "ok"
     answered_by = s.llm_model
     # Short SMS answers are cached separately from full answers.
@@ -87,7 +98,8 @@ def answer_question(req: AskRequest) -> AskResponse:
     history_answer = None
 
     try:
-        cached = None if history else answer_cache.get(question, cache_lang)
+        # Photo answers are never cached: the same words can come with different photos.
+        cached = None if history or photo_note else answer_cache.get(question, cache_lang)
         if cached:
             answer, sources = cached
             flags.append("cache_hit")
@@ -99,7 +111,7 @@ def answer_question(req: AskRequest) -> AskResponse:
                     # Search failing (e.g. embedding quota) should not block the answer.
                     log.exception("Retrieval failed; answering without knowledge excerpts.")
                     flags.append(f"retrieval_failed:{type(exc).__name__}")
-            messages = build_messages(question, language, ctx, chunks, history,
+            messages = build_messages(model_question, language, ctx, chunks, history,
                                       find_glossary_terms(question), req.channel)
             raw = llm.chat(messages)
             answered_by = llm.last_model()
@@ -112,7 +124,7 @@ def answer_question(req: AskRequest) -> AskResponse:
             history_answer = guardrails.strip_markdown(raw)
             flags.extend(guard_flags)
             sources = _to_sources(chunks)
-            if not history:
+            if not history and not photo_note:
                 answer_cache.put(question, cache_lang, (answer, sources))
     except Exception as exc:
         log.exception("Pipeline failed; returning fallback answer.")
@@ -121,7 +133,7 @@ def answer_question(req: AskRequest) -> AskResponse:
         answer = fallback_answer(language, chunks)
         sources = _to_sources(chunks)
 
-    memory.save_turn(session_id, question, history_answer or answer, language)
+    memory.save_turn(session_id, model_question, history_answer or answer, language)
     latency_ms = int((time.perf_counter() - start) * 1000)
 
     log_request({

@@ -7,6 +7,15 @@ export interface Source {
   similarity: number;
 }
 
+export interface PhotoDiagnosis {
+  is_plant: boolean;
+  crop: string | null;
+  problem: string;
+  alternatives: string[];
+  confidence: "high" | "medium" | "low";
+  symptoms: string;
+}
+
 export interface AskResponse {
   request_id: string;
   session_id: string;
@@ -20,6 +29,7 @@ export interface AskResponse {
   prompt_version: string;
   latency_ms: number;
   flags: string[];
+  photo?: PhotoDiagnosis | null;
 }
 
 export interface ChatMessage {
@@ -28,4 +38,5 @@ export interface ChatMessage {
   text: string;
   response?: AskResponse;
   error?: boolean;
+  imageUrl?: string;
 }

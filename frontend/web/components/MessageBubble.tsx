@@ -16,11 +16,23 @@ export default function MessageBubble({ message, uiLanguage }: Props) {
     <article className={`message ${isFarmer ? "from-farmer" : "from-advisor"}`}>
       <p className="message-author">{isFarmer ? t.you : t.advisor}</p>
       <div className={`bubble${message.error ? " is-error" : ""}`}>
+        {message.imageUrl && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img className="message-photo" src={message.imageUrl} alt={t.photoOnly} />
+        )}
         <p className="message-text">{message.text}</p>
         {r && <SourceList sources={r.sources} label={t.sources} />}
       </div>
       {r && (
         <dl className="message-meta">
+          {r.photo && r.photo.is_plant && (
+            <div>
+              <dt>{t.photoFinding}</dt>
+              <dd>
+                {r.photo.problem} ({t.confidence}: {t[`conf_${r.photo.confidence}`]})
+              </dd>
+            </div>
+          )}
           {r.crop && (
             <div>
               <dt>{t.crop}</dt>
