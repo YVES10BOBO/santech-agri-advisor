@@ -28,6 +28,8 @@ def chat(messages: list[dict], model: Optional[str] = None) -> str:
     kwargs = {"model": model or s.openai_model, "messages": messages}
     if s.llm_temperature >= 0:
         kwargs["temperature"] = s.llm_temperature
+    if s.llm_reasoning_effort:
+        kwargs["reasoning_effort"] = s.llm_reasoning_effort
     resp = get_client().chat.completions.create(**kwargs)
     return (resp.choices[0].message.content or "").strip()
 

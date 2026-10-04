@@ -9,6 +9,9 @@ os.environ.update({
     "DATABASE_URL": "",
     "OPENAI_API_KEY": "test-key",
     "LLM_BASE_URL": "",
+    "LLM_REASONING_EFFORT": "",
+    "CHANNEL_WEBHOOK_TOKEN": "",
+    "AT_API_KEY": "",
     "OPENBLAS_NUM_THREADS": "1",
 })
 

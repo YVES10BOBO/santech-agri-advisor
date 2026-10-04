@@ -26,6 +26,9 @@ class Settings(BaseSettings):
     embedding_dim: int = 1536                    # must match database/migrations/002
     llm_temperature: float = 0.2                 # set to -1 for models that reject temperature
     llm_timeout_seconds: float = 45.0
+    # Thinking before answering: low | medium | high | none. Empty = provider default.
+    # Lower is faster; Gemini 3.x default thinking can take ~30 s per answer.
+    llm_reasoning_effort: str = ""
 
     # Database (Supabase PostgreSQL + pgvector). Empty = run without database.
     database_url: str = ""
