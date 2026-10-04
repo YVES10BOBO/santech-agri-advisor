@@ -21,5 +21,22 @@ def test_version_returns_versions():
 
 def test_markdown_is_stripped_from_answers():
     from app.ai.guardrails import strip_markdown
-    text = "## Inama\n1. **Nkongwa:** reba amababi.\n* Koresha __umuti__ wanditse."
+    text = "## Inama\n1. **Nkongwa:** reba *amababi*.\n* Koresha __umuti__ wanditse."
     assert strip_markdown(text) == "Inama\n1. Nkongwa: reba amababi.\n- Koresha umuti wanditse."
+
+
+def test_current_season_by_month():
+    from app.ai.prompts import current_season
+    assert current_season(10).startswith("Season A")
+    assert current_season(1).startswith("Season A")
+    assert current_season(3).startswith("Season B")
+    assert current_season(8).startswith("the dry period")
+
+
+def test_rules_and_excerpts_sent_as_one_system_message():
+    from app.ai.context import QuestionContext
+    from app.ai.prompts import build_messages
+    msgs = build_messages("When do I plant beans?", "en", QuestionContext(), [], [], [])
+    system = [m for m in msgs if m["role"] == "system"]
+    assert len(system) == 1
+    assert "SCOPE" in system[0]["content"] and "KNOWLEDGE EXCERPTS" in system[0]["content"]

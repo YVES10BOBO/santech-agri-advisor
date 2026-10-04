@@ -62,6 +62,7 @@ def answer_question(req: AskRequest) -> AskResponse:
     status = "ok"
     # Short SMS answers are cached separately from full answers.
     cache_lang = f"{language}-sms" if req.channel == "sms" else language
+    history_answer = None
 
     try:
         cached = None if history else answer_cache.get(question, cache_lang)
@@ -70,14 +71,22 @@ def answer_question(req: AskRequest) -> AskResponse:
             flags.append("cache_hit")
         else:
             if get_pool() is not None:
-                embedding = llm.embed([retrieval_query])[0]
-                chunks = retriever.retrieve(embedding, ctx.crop)
+                try:
+                    embedding = llm.embed([retrieval_query])[0]
+                    chunks = retriever.retrieve(embedding, ctx.crop)
+                except Exception as exc:
+                    # Search failing (e.g. embedding quota) should not block the answer.
+                    log.exception("Retrieval failed; answering without knowledge excerpts.")
+                    flags.append(f"retrieval_failed:{type(exc).__name__}")
             messages = build_messages(question, language, ctx, chunks, history,
                                       find_glossary_terms(question), req.channel)
             raw = llm.chat(messages)
             if not raw:
                 raise RuntimeError("Empty answer from LLM.")
             answer, guard_flags = guardrails.check(raw, language, has_sources=bool(chunks))
+            # Memory keeps the answer without the added safety/referral notes; otherwise
+            # the model copies those notes into every later answer of the conversation.
+            history_answer = guardrails.strip_markdown(raw)
             flags.extend(guard_flags)
             sources = _to_sources(chunks)
             if not history:
@@ -89,7 +98,7 @@ def answer_question(req: AskRequest) -> AskResponse:
         answer = fallback_answer(language, chunks)
         sources = _to_sources(chunks)
 
-    memory.save_turn(session_id, question, answer, language)
+    memory.save_turn(session_id, question, history_answer or answer, language)
     latency_ms = int((time.perf_counter() - start) * 1000)
 
     log_request({

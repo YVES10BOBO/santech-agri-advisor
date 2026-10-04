@@ -22,6 +22,8 @@ class Settings(BaseSettings):
     openai_api_key: str = ""
     llm_base_url: str = ""                       # empty = OpenAI
     openai_model: str = "gpt-4.1-mini"          # set to the model you selected
+    # Comma-separated models tried in order when the main one is overloaded or out of quota.
+    llm_fallback_models: str = ""
     openai_embedding_model: str = "text-embedding-3-small"
     embedding_dim: int = 1536                    # must match database/migrations/002
     llm_temperature: float = 0.2                 # set to -1 for models that reject temperature
@@ -55,6 +57,10 @@ class Settings(BaseSettings):
     cors_origins: str = "http://localhost:3000"
     log_file: str = "logs/requests.jsonl"
     glossary_path: str = str(PROJECT_ROOT / "data" / "glossary.csv")
+
+    @property
+    def fallback_model_list(self) -> list[str]:
+        return [m.strip() for m in self.llm_fallback_models.split(",") if m.strip()]
 
     @property
     def cors_origin_list(self) -> list[str]:

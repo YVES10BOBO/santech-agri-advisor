@@ -57,3 +57,20 @@ def test_language_and_context_detection():
     assert ctx.crop == "maize" and ctx.dimension == "post_harvest"
     assert extract_context("I protect my grain").dimension != "weather"
     assert extract_context("Nakoresha ifumbire ingana iki ku birayi?").crop == "potato"
+
+
+def test_answers_even_when_retrieval_fails(monkeypatch):
+    from app.ai import pipeline
+
+    def no_quota(texts):
+        raise RuntimeError("embedding quota reached")
+    monkeypatch.setattr(pipeline, "get_pool", lambda: object())
+    monkeypatch.setattr(llm, "embed", no_quota)
+    monkeypatch.setattr(llm, "chat", lambda messages, model=None: "Plant beans at the start of the rains.")
+    monkeypatch.setattr(pipeline.memory, "get_history", lambda session_id: [])
+    monkeypatch.setattr(pipeline.memory, "save_turn", lambda *args: None)
+    with TestClient(app) as client:
+        r = client.post("/ask", json={"question": "When do I plant climbing beans?", "language": "en"})
+    body = r.json()
+    assert "Plant beans" in body["answer"]
+    assert any(f.startswith("retrieval_failed") for f in body["flags"])

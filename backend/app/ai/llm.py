@@ -3,11 +3,14 @@
 Works with any OpenAI-compatible API (OpenAI, Google Gemini, a self-hosted open model)
 by setting LLM_BASE_URL in backend/.env.
 """
+import logging
 from typing import Optional
 
-from openai import OpenAI
+from openai import InternalServerError, OpenAI, RateLimitError
 
 from app.config import get_settings
+
+log = logging.getLogger(__name__)
 
 _client: Optional[OpenAI] = None
 
@@ -19,19 +22,29 @@ def get_client() -> OpenAI:
         if not s.openai_api_key:
             raise RuntimeError("OPENAI_API_KEY is not set.")
         _client = OpenAI(api_key=s.openai_api_key, base_url=s.llm_base_url or None,
-                         timeout=s.llm_timeout_seconds, max_retries=2)
+                         timeout=s.llm_timeout_seconds, max_retries=1)
     return _client
 
 
 def chat(messages: list[dict], model: Optional[str] = None) -> str:
+    """Asks the main model; if it is overloaded or out of quota, tries the fallback models."""
     s = get_settings()
-    kwargs = {"model": model or s.openai_model, "messages": messages}
-    if s.llm_temperature >= 0:
-        kwargs["temperature"] = s.llm_temperature
-    if s.llm_reasoning_effort:
-        kwargs["reasoning_effort"] = s.llm_reasoning_effort
-    resp = get_client().chat.completions.create(**kwargs)
-    return (resp.choices[0].message.content or "").strip()
+    models = [model] if model else [s.openai_model, *s.fallback_model_list]
+    for i, name in enumerate(models):
+        kwargs = {"model": name, "messages": messages}
+        if s.llm_temperature >= 0:
+            kwargs["temperature"] = s.llm_temperature
+        if s.llm_reasoning_effort:
+            kwargs["reasoning_effort"] = s.llm_reasoning_effort
+        try:
+            resp = get_client().chat.completions.create(**kwargs)
+            return (resp.choices[0].message.content or "").strip()
+        except (RateLimitError, InternalServerError) as exc:
+            if i == len(models) - 1:
+                raise
+            log.warning("Model %s unavailable (%s); trying %s.",
+                        name, type(exc).__name__, models[i + 1])
+    return ""
 
 
 def embed(texts: list[str]) -> list[list[float]]:

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import LanguageToggle from "./LanguageToggle";
 import MessageBubble from "./MessageBubble";
+import ThinkingIndicator from "./ThinkingIndicator";
 import { askQuestion } from "@/lib/api";
 import { starterQuestions, strings } from "@/lib/strings";
 import type { ChatMessage, Language } from "@/lib/types";
@@ -94,14 +95,14 @@ export default function ChatWindow() {
         ))}
 
         {loading && (
-          <p className="thinking" role="status">
-            <span className="dots" aria-hidden="true">
-              <span />
-              <span />
-              <span />
-            </span>
-            {t.thinking}
-          </p>
+          <ThinkingIndicator
+            steps={[
+              { after: 0, text: t.stepRead },
+              { after: 2, text: t.stepSearch },
+              { after: 5, text: t.stepWrite },
+              { after: 25, text: t.stepSlow },
+            ]}
+          />
         )}
         <div ref={endRef} />
       </main>
