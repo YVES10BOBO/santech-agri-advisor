@@ -58,11 +58,13 @@ def answer_question(req: AskRequest) -> AskResponse:
     retrieval_query = f"{previous}\n{question}" if previous else question
 
     chunks: list[RetrievedChunk] = []
-    flags: list[str] = []
+    flags: list[str] = [] if req.channel == "api" else [f"channel:{req.channel}"]
     status = "ok"
+    # Short SMS answers are cached separately from full answers.
+    cache_lang = f"{language}-sms" if req.channel == "sms" else language
 
     try:
-        cached = None if history else answer_cache.get(question, language)
+        cached = None if history else answer_cache.get(question, cache_lang)
         if cached:
             answer, sources = cached
             flags.append("cache_hit")
@@ -71,7 +73,7 @@ def answer_question(req: AskRequest) -> AskResponse:
                 embedding = llm.embed([retrieval_query])[0]
                 chunks = retriever.retrieve(embedding, ctx.crop)
             messages = build_messages(question, language, ctx, chunks, history,
-                                      find_glossary_terms(question))
+                                      find_glossary_terms(question), req.channel)
             raw = llm.chat(messages)
             if not raw:
                 raise RuntimeError("Empty answer from LLM.")
@@ -79,7 +81,7 @@ def answer_question(req: AskRequest) -> AskResponse:
             flags.extend(guard_flags)
             sources = _to_sources(chunks)
             if not history:
-                answer_cache.put(question, language, (answer, sources))
+                answer_cache.put(question, cache_lang, (answer, sources))
     except Exception as exc:
         log.exception("Pipeline failed; returning fallback answer.")
         status = "fallback"

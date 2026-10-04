@@ -50,13 +50,20 @@ ACCURACY AND SAFETY RULES
 """
 
 
+SMS_INSTRUCTION = """
+CHANNEL: SMS on a basic phone. This overrides the length and structure above.
+- Keep the whole answer under 400 characters. No numbered list longer than 3 steps.
+- Keep any safety warning, in very few words (e.g. "wear gloves, follow the label").
+"""
+
+
 def build_messages(question: str, language: str, ctx: QuestionContext,
                    chunks: list[RetrievedChunk], history: list[dict],
-                   glossary: list[tuple[str, str]]) -> list[dict]:
-    messages: list[dict] = [{
-        "role": "system",
-        "content": SYSTEM_PROMPT.format(language=LANGUAGE_NAMES.get(language, "English")),
-    }]
+                   glossary: list[tuple[str, str]], channel: str = "api") -> list[dict]:
+    system = SYSTEM_PROMPT.format(language=LANGUAGE_NAMES.get(language, "English"))
+    if channel == "sms":
+        system += SMS_INSTRUCTION
+    messages: list[dict] = [{"role": "system", "content": system}]
 
     reference: list[str] = []
     if chunks:

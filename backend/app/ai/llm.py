@@ -1,4 +1,8 @@
-"""OpenAI client for chat completions and embeddings."""
+"""LLM client for chat completions and embeddings.
+
+Works with any OpenAI-compatible API (OpenAI, Google Gemini, a self-hosted open model)
+by setting LLM_BASE_URL in backend/.env.
+"""
 from typing import Optional
 
 from openai import OpenAI
@@ -14,7 +18,8 @@ def get_client() -> OpenAI:
         s = get_settings()
         if not s.openai_api_key:
             raise RuntimeError("OPENAI_API_KEY is not set.")
-        _client = OpenAI(api_key=s.openai_api_key, timeout=s.llm_timeout_seconds, max_retries=2)
+        _client = OpenAI(api_key=s.openai_api_key, base_url=s.llm_base_url or None,
+                         timeout=s.llm_timeout_seconds, max_retries=2)
     return _client
 
 
@@ -29,5 +34,7 @@ def chat(messages: list[dict], model: Optional[str] = None) -> str:
 
 def embed(texts: list[str]) -> list[list[float]]:
     s = get_settings()
-    resp = get_client().embeddings.create(model=s.openai_embedding_model, input=texts)
+    # Ask for exactly EMBEDDING_DIM values so any embedding model fits the vector column.
+    resp = get_client().embeddings.create(model=s.openai_embedding_model, input=texts,
+                                          dimensions=s.embedding_dim)
     return [d.embedding for d in resp.data]

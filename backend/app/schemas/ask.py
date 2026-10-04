@@ -4,6 +4,8 @@ from typing import Literal, Optional
 from pydantic import BaseModel, Field
 
 Language = Literal["rw", "en"]
+# "sms" asks for a short answer that fits a feature phone (also used after USSD).
+Channel = Literal["api", "web", "sms"]
 
 
 class AskRequest(BaseModel):
@@ -13,6 +15,8 @@ class AskRequest(BaseModel):
         None, description="'rw' or 'en'. If omitted, the language is detected.")
     session_id: Optional[str] = Field(
         None, description="Reuse to ask follow-up questions in the same conversation.")
+    channel: Channel = Field(
+        "api", description="'sms' returns a short answer for feature phones.")
 
 
 class Source(BaseModel):

@@ -18,8 +18,9 @@ class Settings(BaseSettings):
     system_version: str = "0.1.0"
     environment: str = "development"
 
-    # OpenAI
+    # LLM (OpenAI or any OpenAI-compatible API, e.g. Google Gemini, self-hosted model)
     openai_api_key: str = ""
+    llm_base_url: str = ""                       # empty = OpenAI
     openai_model: str = "gpt-4.1-mini"          # set to the model you selected
     openai_embedding_model: str = "text-embedding-3-small"
     embedding_dim: int = 1536                    # must match database/migrations/002
@@ -38,6 +39,14 @@ class Settings(BaseSettings):
 
     # Conversation memory
     history_turns: int = 6
+
+    # Farmer channels: USSD and SMS through Africa's Talking.
+    # Empty AT_API_KEY = SMS replies are only written to the log (development).
+    at_username: str = "sandbox"
+    at_api_key: str = ""
+    at_sender_id: str = ""                       # short code / sender name, if assigned
+    # Secret added to the callback URLs as ?token=..., so only the gateway can call them.
+    channel_webhook_token: str = ""
 
     # Misc
     cors_origins: str = "http://localhost:3000"

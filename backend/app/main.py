@@ -9,6 +9,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api import ask, health, version
+from app.channels import sms, ussd
 from app.config import get_settings
 from app.core.logger import setup_logging
 from app.db.database import close_pool, init_pool
@@ -38,3 +39,5 @@ app.add_middleware(
 app.include_router(health.router)
 app.include_router(version.router)
 app.include_router(ask.router)
+app.include_router(ussd.router)
+app.include_router(sms.router)
