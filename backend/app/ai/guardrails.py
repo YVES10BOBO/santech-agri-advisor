@@ -32,7 +32,20 @@ _NOTES = {
 }
 
 
+_MD_EMPHASIS = re.compile(r"(\*\*|__)(.+?)\1")
+_MD_HEADING = re.compile(r"^\s{0,3}#{1,6}\s*", re.M)
+_MD_BULLET = re.compile(r"^(\s*)[*•]\s+", re.M)
+
+
+def strip_markdown(text: str) -> str:
+    """Plain text for farmers: SMS and simple screens show markdown as raw symbols."""
+    text = _MD_EMPHASIS.sub(r"\2", text)
+    text = _MD_HEADING.sub("", text)
+    return _MD_BULLET.sub(r"\1- ", text)
+
+
 def check(answer: str, language: str, has_sources: bool) -> tuple[str, list[str]]:
+    answer = strip_markdown(answer)
     flags: list[str] = []
     lang = language if language in ("rw", "en") else "en"
     additions: list[str] = []

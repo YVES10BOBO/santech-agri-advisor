@@ -17,3 +17,9 @@ def test_version_returns_versions():
         r = client.get("/version")
     assert r.status_code == 200
     assert {"system_version", "model", "prompt_version"} <= r.json().keys()
+
+
+def test_markdown_is_stripped_from_answers():
+    from app.ai.guardrails import strip_markdown
+    text = "## Inama\n1. **Nkongwa:** reba amababi.\n* Koresha __umuti__ wanditse."
+    assert strip_markdown(text) == "Inama\n1. Nkongwa: reba amababi.\n- Koresha umuti wanditse."
