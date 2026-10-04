@@ -1,0 +1,33 @@
+"""OpenAI client for chat completions and embeddings."""
+from typing import Optional
+
+from openai import OpenAI
+
+from app.config import get_settings
+
+_client: Optional[OpenAI] = None
+
+
+def get_client() -> OpenAI:
+    global _client
+    if _client is None:
+        s = get_settings()
+        if not s.openai_api_key:
+            raise RuntimeError("OPENAI_API_KEY is not set.")
+        _client = OpenAI(api_key=s.openai_api_key, timeout=s.llm_timeout_seconds, max_retries=2)
+    return _client
+
+
+def chat(messages: list[dict], model: Optional[str] = None) -> str:
+    s = get_settings()
+    kwargs = {"model": model or s.openai_model, "messages": messages}
+    if s.llm_temperature >= 0:
+        kwargs["temperature"] = s.llm_temperature
+    resp = get_client().chat.completions.create(**kwargs)
+    return (resp.choices[0].message.content or "").strip()
+
+
+def embed(texts: list[str]) -> list[list[float]]:
+    s = get_settings()
+    resp = get_client().embeddings.create(model=s.openai_embedding_model, input=texts)
+    return [d.embedding for d in resp.data]

@@ -1,0 +1,10 @@
+# Runs the backend locally. The database is Supabase (set DATABASE_URL in backend/.env).
+services:
+  backend:
+    build: ./backend
+    env_file: ./backend/.env
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/data:ro        # glossary.csv is read from /data
+    restart: unless-stopped

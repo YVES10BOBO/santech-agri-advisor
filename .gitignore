@@ -1,0 +1,32 @@
+# Secrets (never commit)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+
+# Runtime output
+backend/logs/
+logs/
+tests/results/*
+!tests/results/.gitkeep
+
+# Source documents can be large; commit only if licences allow
+data/**/*.pdf
+
+# Node
+node_modules/
+.next/
+
+# Editors and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

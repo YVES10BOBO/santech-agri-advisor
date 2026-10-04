@@ -1,0 +1,361 @@
+/* Palette drawn from Rwandan terraced hillsides. */
+:root {
+  --terrace-1: #1d4a2e;   /* deepest terrace, header + text */
+  --terrace-2: #2b6339;
+  --terrace-3: #3d7d45;
+  --terrace-4: #5a9a54;
+  --maize: #f2c230;       /* primary action */
+  --maize-dark: #c99a0d;
+  --mist: #edf2ea;        /* page background */
+  --leaf-wash: #dfe9d9;   /* farmer bubble */
+  --white: #ffffff;
+  --ink: #1b2a20;
+  --ink-soft: #4d5e52;
+  --error: #9b2c1f;
+
+  --font: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --step--1: 0.875rem;
+  --step-0: 1.0625rem;
+  --step-1: 1.25rem;
+  --step-2: 1.75rem;
+  --step-3: 2.25rem;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  font-family: var(--font);
+  font-size: var(--step-0);
+  line-height: 1.55;
+  color: var(--ink);
+  background: var(--mist);
+}
+
+button,
+textarea {
+  font: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid var(--maize);
+  outline-offset: 2px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+}
+
+/* ---------- Header: layered bands like terraced hills ---------- */
+.terraces {
+  color: var(--white);
+  /* Solid deep green behind the text, then three terrace bands at the bottom. */
+  background: linear-gradient(
+    to top,
+    var(--terrace-4) 0 10px,
+    var(--terrace-3) 10px 20px,
+    var(--terrace-2) 20px 30px,
+    var(--terrace-1) 30px
+  );
+  padding: 1.5rem 1.25rem calc(30px + 1.5rem);
+}
+
+.header-inner {
+  max-width: 46rem;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.terraces h1 {
+  margin: 0;
+  font-size: var(--step-3);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+
+.subtitle {
+  margin: 0.4rem 0 0;
+  font-size: var(--step-0);
+  opacity: 0.9;
+  max-width: 30rem;
+}
+
+.header-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.lang-toggle {
+  display: inline-flex;
+  border: 2px solid rgba(255, 255, 255, 0.55);
+  border-radius: 999px;
+  padding: 2px;
+}
+
+.lang-toggle button {
+  border: 0;
+  background: transparent;
+  color: var(--white);
+  padding: 0.3rem 0.85rem;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: var(--step--1);
+  font-weight: 700;
+}
+
+.lang-toggle button.is-active {
+  background: var(--maize);
+  color: var(--terrace-1);
+}
+
+.link-button {
+  border: 0;
+  background: none;
+  color: var(--white);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  font-size: var(--step--1);
+  padding: 0.2rem 0;
+}
+
+/* ---------- Conversation ---------- */
+.conversation {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem 1.25rem;
+  width: 100%;
+  max-width: 46rem;
+  margin: 0 auto;
+}
+
+.starters h2 {
+  font-size: var(--step-1);
+  margin: 0 0 0.75rem;
+}
+
+.starters ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.starters button {
+  width: 100%;
+  text-align: left;
+  background: var(--white);
+  color: var(--ink);
+  border: 2px solid var(--leaf-wash);
+  border-left: 6px solid var(--terrace-3);
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+}
+
+.starters button:hover {
+  border-color: var(--terrace-4);
+  border-left-color: var(--terrace-1);
+}
+
+.message {
+  margin: 0 0 1.25rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.message.from-farmer {
+  align-items: flex-end;
+}
+
+.message-author {
+  margin: 0 0 0.2rem;
+  font-size: var(--step--1);
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+
+.bubble {
+  max-width: min(36rem, 92%);
+  padding: 0.85rem 1.1rem;
+}
+
+.from-farmer .bubble {
+  background: var(--leaf-wash);
+  border-radius: 14px 14px 4px 14px;
+}
+
+.from-advisor .bubble {
+  background: var(--white);
+  border-left: 4px solid var(--terrace-2);
+  border-radius: 4px 14px 14px 14px;
+}
+
+.bubble.is-error {
+  border-left-color: var(--error);
+  color: var(--error);
+}
+
+.message-text {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.sources {
+  margin-top: 0.85rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--leaf-wash);
+  font-size: var(--step--1);
+  color: var(--ink-soft);
+}
+
+.sources-label {
+  margin: 0 0 0.25rem;
+  font-weight: 700;
+}
+
+.sources ul {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.sources a {
+  color: var(--terrace-2);
+}
+
+.message-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 0.35rem 0 0;
+  font-size: var(--step--1);
+  color: var(--ink-soft);
+}
+
+.message-meta div {
+  display: flex;
+  gap: 0.3rem;
+}
+
+.message-meta dt {
+  font-weight: 700;
+}
+
+.message-meta dd {
+  margin: 0;
+}
+
+.thinking {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--ink-soft);
+}
+
+.dots {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.dots span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--terrace-3);
+  animation: pulse 1.2s infinite ease-in-out;
+}
+
+.dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes pulse {
+  0%, 80%, 100% { opacity: 0.25; }
+  40% { opacity: 1; }
+}
+
+/* ---------- Composer ---------- */
+.composer {
+  display: flex;
+  gap: 0.6rem;
+  width: 100%;
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: 0.75rem 1.25rem 1.25rem;
+}
+
+.composer textarea {
+  flex: 1;
+  resize: none;
+  padding: 0.7rem 0.9rem;
+  border: 2px solid var(--terrace-4);
+  border-radius: 10px;
+  background: var(--white);
+  color: var(--ink);
+}
+
+.composer button {
+  border: 0;
+  border-radius: 10px;
+  padding: 0 1.4rem;
+  background: var(--maize);
+  color: var(--terrace-1);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.composer button:hover:not(:disabled) {
+  background: var(--maize-dark);
+}
+
+.composer button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+@media (max-width: 560px) {
+  .terraces h1 {
+    font-size: var(--step-2);
+  }
+  .header-actions {
+    align-items: flex-start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dots span {
+    animation: none;
+    opacity: 0.6;
+  }
+}
