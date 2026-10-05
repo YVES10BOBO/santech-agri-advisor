@@ -141,10 +141,29 @@ textarea {
   min-width: 0;
   display: flex;
   flex-direction: column;
+  position: relative;
+  isolation: isolate;
+  background: var(--mist);
+}
+
+/* Imigongo pattern behind the chat: very faint, noticed only when looking closely.
+   Cards, bubbles and the composer stay solid on top of it. */
+.main::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: url("/assets/imingogo-trimmed.png");
+  background-repeat: repeat;
+  background-size: 80px auto;
+  background-position: center top;
+  opacity: 0.06;
 }
 
 /* ---------- Sidebar ---------- */
 .sidebar {
+  transition: margin-left 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease, visibility 0.5s;
   width: var(--sidebar-width);
   flex: none;
   display: flex;
@@ -186,7 +205,6 @@ textarea {
 }
 
 .sidebar-close {
-  display: none;
   margin-left: auto;
   color: var(--white);
 }
@@ -337,6 +355,19 @@ textarea {
   display: none;
 }
 
+@media (max-width: 760px) {
+  .sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    background: rgba(0, 0, 0, 0.35);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+  }
+}
+
 /* ---------- Top bar ---------- */
 .topbar {
   display: flex;
@@ -349,7 +380,7 @@ textarea {
 }
 
 .menu-button {
-  display: none;
+  flex: none;
 }
 
 .topbar-title {
@@ -416,7 +447,7 @@ textarea {
 }
 
 .conversation-inner {
-  max-width: 48rem;
+  max-width: 64rem;
   margin: 0 auto;
   padding: 1.5rem 1.25rem;
 }
@@ -553,7 +584,7 @@ textarea {
 
 .message-body {
   min-width: 0;
-  max-width: min(40rem, 88%);
+  max-width: min(56rem, 92%);
   display: flex;
   flex-direction: column;
 }
@@ -743,7 +774,7 @@ textarea {
 /* ---------- Composer ---------- */
 .composer {
   width: 100%;
-  max-width: 48rem;
+  max-width: 64rem;
   margin: 0 auto;
   padding: 0.5rem 1.25rem 0.5rem;
 }
@@ -884,6 +915,15 @@ textarea {
   color: var(--terrace-1);
 }
 
+/* Computers: the sidebar can be collapsed with the top-bar button. */
+@media (min-width: 761px) {
+  .shell.is-collapsed .sidebar {
+    margin-left: calc(-1 * var(--sidebar-width));
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
 /* ---------- Tablet and phone ---------- */
 @media (max-width: 900px) {
   .crop-cards {
@@ -897,25 +937,19 @@ textarea {
     inset: 0 auto 0 0;
     z-index: 20;
     transform: translateX(-100%);
-    transition: transform 0.2s ease;
+    opacity: 0;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease, visibility 0.5s;
     box-shadow: 4px 0 24px rgba(0, 0, 0, 0.2);
   }
 
   .sidebar.is-open {
     transform: none;
-  }
-
-  .sidebar-close,
-  .menu-button {
-    display: inline-grid;
+    opacity: 1;
   }
 
   .sidebar-backdrop.is-open {
-    display: block;
-    position: fixed;
-    inset: 0;
-    z-index: 10;
-    background: rgba(0, 0, 0, 0.35);
+    opacity: 1;
+    pointer-events: auto;
   }
 
   .topbar {
@@ -947,8 +981,5 @@ textarea {
   }
   .mic-button.is-recording {
     animation: none;
-  }
-  .sidebar {
-    transition: none;
   }
 }
