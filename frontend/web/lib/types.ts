@@ -39,4 +39,5 @@ export interface ChatMessage {
   response?: AskResponse;
   error?: boolean;
   imageUrl?: string;
+  hadPhoto?: boolean;
 }

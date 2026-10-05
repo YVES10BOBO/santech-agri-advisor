@@ -36,6 +36,12 @@ class Settings(BaseSettings):
     # Lower is faster; Gemini 3.x default thinking can take ~30 s per answer.
     llm_reasoning_effort: str = ""
 
+    # Text-to-speech (answers read aloud). Uses the Gemini API; key defaults to LLM_API_KEY.
+    tts_model: str = "gemini-3.1-flash-tts-preview"
+    tts_voice: str = "Kore"
+    tts_api_key: str = ""
+    tts_base_url: str = "https://generativelanguage.googleapis.com/v1beta"
+
     # Database (Supabase PostgreSQL + pgvector). Empty = run without database.
     database_url: str = ""
 

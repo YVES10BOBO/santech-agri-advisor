@@ -8,7 +8,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import ask, ask_image, health, transcribe, version
+from app.api import ask, ask_image, health, speak, transcribe, version
 from app.channels import sms, ussd
 from app.config import get_settings
 from app.core.logger import setup_logging
@@ -41,5 +41,6 @@ app.include_router(version.router)
 app.include_router(ask.router)
 app.include_router(ask_image.router)
 app.include_router(transcribe.router)
+app.include_router(speak.router)
 app.include_router(ussd.router)
 app.include_router(sms.router)

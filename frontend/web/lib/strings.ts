@@ -3,15 +3,33 @@ import type { Language } from "./types";
 // Kinyarwanda strings must be reviewed by a native speaker before the demo.
 export const strings = {
   rw: {
-    title: "Umujyanama w'Ubuhinzi",
-    subtitle: "Baza ikibazo cy'ubuhinzi ku bigori, ibishyimbo n'ibirayi.",
+    brand: "Umujyanama w'Ubuhinzi",
+    brandSub: "SAN TECH",
+    newChat: "Ikiganiro gishya",
+    history: "Ibiganiro byawe",
+    historyEmpty: "Nta kiganiro kirabikwa. Baza ikibazo cya mbere!",
+    deleteChat: "Siba iki kiganiro",
+    openMenu: "Fungura urutonde",
+    closeMenu: "Funga urutonde",
+    online: "Iri ku murongo",
+    channelsTitle: "Nta interineti?",
+    channelsUssd: "Kanda {code} kuri telefoni iyo ari yo yose",
+    channelsSms: "Igisubizo kiza kuri SMS",
+    footerNote: "Inama zishingiye ku nyandiko za RAB, MINAGRI na FAO. Niba utizeye, baza agronome w'umurenge.",
+    welcomeTitle: "Muraho! Ndi umujyanama wawe w'ubuhinzi.",
+    welcomeText: "Mbaza ku bigori, ibishyimbo n'ibirayi: gutera, ifumbire, indwara n'ibyonnyi, kubika umusaruro n'ibindi.",
+    capType: "Andika",
+    capSpeak: "Vuga",
+    capPhoto: "Ohereza ifoto",
+    capUssd: "USSD",
+    tryThese: "Hitamo ikibazo cyo gutangiriraho",
+    crop_maize: "Ibigori",
+    crop_beans: "Ibishyimbo",
+    crop_potato: "Ibirayi",
     placeholder: "Andika ikibazo cyawe…",
     send: "Ohereza",
     sources: "Aho amakuru yavuye",
-    newChat: "Ikiganiro gishya",
-    tryThese: "Gerageza kimwe muri ibi bibazo",
-    error:
-      "Igisubizo nticyabonetse. Reba ko seriveri ikora, hanyuma wongere ugerageze.",
+    error: "Igisubizo nticyabonetse. Reba ko seriveri ikora, hanyuma wongere ugerageze.",
     crop: "Igihingwa",
     topic: "Ingingo",
     time: "Igihe",
@@ -38,15 +56,40 @@ export const strings = {
     micCheck: "Reba niba byanditswe neza, ukosore niba ari ngombwa, hanyuma wohereze.",
     micDenied: "Mikoro ntiyemewe. Emerera urubuga gukoresha mikoro.",
     micFailed: "Ntitwabashije kumva neza. Ongera ugerageze cyangwa wandike ikibazo.",
+    listen: "Umva igisubizo",
+    stopListening: "Hagarika",
+    preparingAudio: "Turimo gutegura amajwi…",
+    audioFailed: "Amajwi ntabonetse, ongera ugerageze",
+    photoNotKept: "(ifoto ntiyabitswe)",
+    developedBy: "Byakozwe na",
   },
   en: {
-    title: "Farm Advisor",
-    subtitle: "Ask a farming question about maize, beans or Irish potatoes.",
+    brand: "Farm Advisor",
+    brandSub: "SAN TECH",
+    newChat: "New conversation",
+    history: "Your conversations",
+    historyEmpty: "No saved conversations yet. Ask your first question!",
+    deleteChat: "Delete this conversation",
+    openMenu: "Open menu",
+    closeMenu: "Close menu",
+    online: "Online",
+    channelsTitle: "No internet?",
+    channelsUssd: "Dial {code} on any phone",
+    channelsSms: "The answer comes by SMS",
+    footerNote: "Advice based on RAB, MINAGRI and FAO guidance. If unsure, ask your sector agronomist.",
+    welcomeTitle: "Hello! I am your farming advisor.",
+    welcomeText: "Ask me about maize, beans and Irish potatoes: planting, fertilizer, pests and diseases, storage and more.",
+    capType: "Type",
+    capSpeak: "Speak",
+    capPhoto: "Send a photo",
+    capUssd: "USSD",
+    tryThese: "Pick a question to start",
+    crop_maize: "Maize",
+    crop_beans: "Beans",
+    crop_potato: "Irish potatoes",
     placeholder: "Type your question…",
     send: "Send",
     sources: "Sources",
-    newChat: "New conversation",
-    tryThese: "Try one of these questions",
     error: "No answer received. Check that the backend is running, then try again.",
     crop: "Crop",
     topic: "Topic",
@@ -74,20 +117,48 @@ export const strings = {
     micCheck: "Check the text, correct it if needed, then send.",
     micDenied: "Microphone not allowed. Allow this site to use the microphone.",
     micFailed: "We could not hear clearly. Try again or type your question.",
+    listen: "Listen to the answer",
+    stopListening: "Stop",
+    preparingAudio: "Preparing audio…",
+    audioFailed: "Audio not available, try again",
+    photoNotKept: "(photo not saved)",
+    developedBy: "Developed by",
   },
 } satisfies Record<Language, Record<string, string>>;
 
-export const starterQuestions: Record<Language, string[]> = {
-  rw: [
-    "Amababi y'ibigori byanjye afite imyobo. Ni iki kandi nakora iki?",
-    "Nakoresha ifumbire ingana iki ku birayi mu murima wanjye muto?",
-    "Ni ryari nkwiye kubagara ibishyimbo byanjye?",
-    "Nabika nte ibigori kugira ngo bitabora cyangwa ngo bifatwe n'imungu?",
-  ],
-  en: [
-    "My maize leaves have holes. What is it and what should I do?",
-    "How much fertilizer should I use for Irish potatoes on my small plot?",
-    "When should I weed my beans?",
-    "How do I store maize so it does not rot or get weevils?",
-  ],
+export type Strings = (typeof strings)["rw"];
+
+export const USSD_CODE = "*384*74619#";
+
+export type Crop = "maize" | "beans" | "potato";
+
+export const starterQuestions: Record<Language, Record<Crop, string[]>> = {
+  rw: {
+    maize: [
+      "Amababi y'ibigori byanjye afite imyobo. Ni iki kandi nakora iki?",
+      "Nabika nte ibigori kugira ngo bitabora cyangwa ngo bifatwe n'imungu?",
+    ],
+    beans: [
+      "Ni ryari nkwiye kubagara ibishyimbo byanjye?",
+      "Ubutaka bwanjye burasharira, ibishyimbo ntibikura neza. Nakora iki?",
+    ],
+    potato: [
+      "Nakoresha ifumbire ingana iki ku birayi mu murima wanjye muto?",
+      "Amababi y'ibirayi byanjye afite ibibara by'ikigina nyuma y'imvura. Nakora iki?",
+    ],
+  },
+  en: {
+    maize: [
+      "My maize leaves have holes. What is it and what should I do?",
+      "How do I store maize so it does not rot or get weevils?",
+    ],
+    beans: [
+      "When should I weed my beans?",
+      "My soil is acidic and my beans grow poorly. What should I do?",
+    ],
+    potato: [
+      "How much fertilizer should I use for Irish potatoes on my small plot?",
+      "My potato leaves have brown patches after rain. What should I do?",
+    ],
+  },
 };
