@@ -31,6 +31,13 @@ export const strings = {
     conf_high: "kinini",
     conf_medium: "giciriritse",
     conf_low: "gito",
+    micStart: "Vuga ikibazo cyawe",
+    micStop: "Hagarika gufata amajwi",
+    micListening: "Ndakumva… kanda kugira ngo uhagarike",
+    micTranscribing: "Turimo kwandika ibyo wavuze…",
+    micCheck: "Reba niba byanditswe neza, ukosore niba ari ngombwa, hanyuma wohereze.",
+    micDenied: "Mikoro ntiyemewe. Emerera urubuga gukoresha mikoro.",
+    micFailed: "Ntitwabashije kumva neza. Ongera ugerageze cyangwa wandike ikibazo.",
   },
   en: {
     title: "Farm Advisor",
@@ -60,6 +67,13 @@ export const strings = {
     conf_high: "high",
     conf_medium: "medium",
     conf_low: "low",
+    micStart: "Speak your question",
+    micStop: "Stop recording",
+    micListening: "Listening… tap to stop",
+    micTranscribing: "Writing down what you said…",
+    micCheck: "Check the text, correct it if needed, then send.",
+    micDenied: "Microphone not allowed. Allow this site to use the microphone.",
+    micFailed: "We could not hear clearly. Try again or type your question.",
   },
 } satisfies Record<Language, Record<string, string>>;
 

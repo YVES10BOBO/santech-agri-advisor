@@ -35,3 +35,18 @@ export async function askWithPhoto(
   }
   return res.json();
 }
+
+export async function transcribeAudio(
+  audio: Blob,
+  language: Language,
+): Promise<{ text: string; latency_ms: number }> {
+  const form = new FormData();
+  form.append("audio", audio, "question.wav");
+  form.append("language", language);
+  const res = await fetch("/api/transcribe", { method: "POST", body: form });
+  if (!res.ok) {
+    const detail = await res.text();
+    throw new Error(`Request failed (${res.status}): ${detail}`);
+  }
+  return res.json();
+}

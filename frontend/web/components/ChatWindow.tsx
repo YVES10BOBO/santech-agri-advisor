@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import LanguageToggle from "./LanguageToggle";
 import MessageBubble from "./MessageBubble";
+import MicButton from "./MicButton";
 import ThinkingIndicator from "./ThinkingIndicator";
 import { askQuestion, askWithPhoto } from "@/lib/api";
 import { starterQuestions, strings } from "@/lib/strings";
@@ -21,6 +22,7 @@ export default function ChatWindow() {
   const [loadingPhoto, setLoadingPhoto] = useState(false);
   const [photo, setPhoto] = useState<{ file: File; url: string } | null>(null);
   const [photoError, setPhotoError] = useState("");
+  const [voiceStatus, setVoiceStatus] = useState("");
   const endRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const t = strings[language];
@@ -50,6 +52,7 @@ export default function ChatWindow() {
     const sentPhoto = photo;
     if ((!q && !sentPhoto) || loading) return;
     setInput("");
+    setVoiceStatus("");
     clearPhoto();
     setMessages((m) => [
       ...m,
@@ -162,6 +165,11 @@ export default function ChatWindow() {
             {photoError && <p className="photo-error">{photoError}</p>}
           </div>
         )}
+        {voiceStatus && (
+          <p className="voice-status" role="status">
+            {voiceStatus}
+          </p>
+        )}
         <div className="composer-row">
           <input
             ref={fileRef}
@@ -185,6 +193,19 @@ export default function ChatWindow() {
               />
             </svg>
           </label>
+          <MicButton
+            language={language}
+            disabled={loading}
+            labels={{
+              start: t.micStart,
+              stop: t.micStop,
+              listening: t.micListening,
+              transcribing: t.micTranscribing,
+            }}
+            messages={{ check: t.micCheck, denied: t.micDenied, failed: t.micFailed }}
+            onText={(text) => setInput((current) => (current ? `${current} ${text}` : text))}
+            onStatus={setVoiceStatus}
+          />
           <label htmlFor="question" className="visually-hidden">
             {t.placeholder}
           </label>

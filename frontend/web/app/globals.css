@@ -375,6 +375,44 @@ textarea {
   outline-offset: 2px;
 }
 
+.mic-button {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  border: 2px solid var(--terrace-4);
+  border-radius: 10px;
+  background: var(--white);
+  color: var(--terrace-2);
+  cursor: pointer;
+}
+
+.mic-button:hover:not(:disabled) {
+  background: var(--leaf-wash);
+}
+
+.mic-button.is-recording {
+  background: var(--error);
+  border-color: var(--error);
+  color: var(--white);
+  animation: pulse-rec 1.2s ease-in-out infinite;
+}
+
+.mic-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+@keyframes pulse-rec {
+  50% { box-shadow: 0 0 0 6px rgba(155, 44, 31, 0.25); }
+}
+
+.voice-status {
+  margin: 0;
+  font-size: var(--step--1);
+  color: var(--ink-soft);
+}
+
 .photo-preview {
   display: flex;
   align-items: center;
@@ -414,5 +452,8 @@ textarea {
 @media (prefers-reduced-motion: reduce) {
   .spinner {
     animation-duration: 2.5s;
+  }
+  .mic-button.is-recording {
+    animation: none;
   }
 }
