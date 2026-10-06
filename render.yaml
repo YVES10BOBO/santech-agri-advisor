@@ -1,0 +1,48 @@
+# Render blueprint for the FastAPI backend (the web chat is deployed on Vercel).
+# Secrets are marked sync: false - Render asks for them; they are never stored in git.
+services:
+  - type: web
+    name: santech-agri-api
+    runtime: python
+    rootDir: backend
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.3
+      - key: LLM_API_KEY
+        sync: false
+      - key: LLM_BASE_URL
+        sync: false
+      - key: LLM_MODEL
+        sync: false
+      - key: LLM_FALLBACK_MODELS
+        sync: false
+      - key: LLM_EMBEDDING_MODEL
+        sync: false
+      - key: LLM_REASONING_EFFORT
+        sync: false
+      - key: LLM_TEMPERATURE
+        sync: false
+      - key: EMBEDDING_DIM
+        sync: false
+      - key: RETRIEVAL_TOP_K
+        sync: false
+      - key: AT_SENDER_ID
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: API_ACCESS_KEY
+        sync: false
+      - key: RETRIEVAL_MIN_SIMILARITY
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false
+      - key: AT_USERNAME
+        sync: false
+      - key: AT_API_KEY
+        sync: false
+      - key: CHANNEL_WEBHOOK_TOKEN
+        sync: false

@@ -2,6 +2,9 @@
 // Adds the API key so it never reaches the browser; only known paths are forwarded.
 import { NextResponse } from "next/server";
 
+// AI answers can take 10-30 s; Vercel's default limit could cut them off.
+export const maxDuration = 60;
+
 const ALLOWED = /^(summary|records|escalations|escalations\/\d+|knowledge)$/;
 
 type Ctx = { params: Promise<{ path: string[] }> };

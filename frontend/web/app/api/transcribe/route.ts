@@ -2,6 +2,9 @@
 // and adds the API key, so the key never reaches the browser.
 import { NextResponse } from "next/server";
 
+// AI answers can take 10-30 s; Vercel's default limit could cut them off.
+export const maxDuration = 60;
+
 export async function POST(request: Request) {
   const backendUrl = process.env.BACKEND_URL ?? "http://localhost:8000";
   const apiKey = process.env.BACKEND_API_KEY ?? "";

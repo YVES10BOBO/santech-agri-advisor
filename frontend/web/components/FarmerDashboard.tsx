@@ -71,7 +71,7 @@ const TEXT = {
     inputsQ: "Ni hehe nabona imbuto nziza n'ifumbire hafi yanjye, kandi nagurisha he umusaruro wanjye?",
     recent: "Ibiganiro byanjye biheruka",
     noRecent: "Nta kiganiro kirabaho.",
-    reach: "Uko wambona",
+    reach: "Uko wabona",
     reachChat: "Ikiganiro: andika, vuga cyangwa ohereza ifoto y'igihingwa kirwaye.",
     reachUssd: "Telefoni isanzwe: kanda {code} ubundi ubaze ikibazo, igisubizo kikugereho kuri SMS.",
     reachSms: "SMS: ohereza ikibazo cyawe, usubizwe kuri SMS.",
