@@ -48,3 +48,9 @@ def test_sms_answers_get_short_safety_note():
     sms_answer, flags = check("Tera umuti ku bigori.", "rw", has_sources=True, channel="sms")
     assert "ppe_note_added" in flags
     assert len(sms_answer) < len(long_answer) and "uturindantoki" in sms_answer
+
+
+def test_insights_needs_database():
+    with TestClient(app) as client:
+        r = client.get("/insights")
+    assert r.status_code == 503

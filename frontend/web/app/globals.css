@@ -983,3 +983,369 @@ textarea {
     animation: none;
   }
 }
+
+/* ---------- Insights dashboard (MINAGRI / RAB) ---------- */
+.insights {
+  min-height: 100dvh;
+  position: relative;
+  isolation: isolate;
+}
+
+.insights::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: url("/assets/imingogo-trimmed.png");
+  background-size: 80px auto;
+  opacity: 0.06;
+}
+
+.insights-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem 1.5rem;
+  background: var(--white);
+  border-bottom: 1px solid var(--line);
+  box-shadow: inset 0 3px 0 var(--terrace-3);
+}
+
+.insights-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.insights-title h1 {
+  margin: 0;
+  font-size: var(--step-1);
+  color: var(--terrace-1);
+}
+
+.insights-title p {
+  margin: 0;
+  font-size: var(--step--1);
+  color: var(--ink-soft);
+}
+
+.insights-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.period {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: var(--step--1);
+  color: var(--ink-soft);
+}
+
+.period select {
+  font: inherit;
+  padding: 0.3rem 0.5rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--white);
+  color: var(--ink);
+}
+
+.back-link {
+  font-size: var(--step--1);
+  font-weight: 700;
+  color: var(--terrace-2);
+}
+
+.insights-status {
+  max-width: 72rem;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+  color: var(--ink-soft);
+}
+
+.insights-status.is-error {
+  color: var(--error);
+}
+
+.insights-grid {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 1.25rem 1.5rem 2rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.kpis {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.kpi,
+.panel {
+  padding: 1rem 1.1rem;
+  border-radius: var(--radius);
+  background: var(--white);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+}
+
+.kpi-label {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+
+.kpi-value {
+  margin: 0.15rem 0 0;
+  font-size: 1.9rem;
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--terrace-1);
+  font-variant-numeric: tabular-nums;
+}
+
+.kpi-note {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+}
+
+.panel h2 {
+  margin: 0 0 0.75rem;
+  font-size: var(--step-0);
+  color: var(--terrace-1);
+}
+
+.panel-wide {
+  grid-column: 1 / -1;
+}
+
+.panel-hint {
+  margin: -0.4rem 0 0.75rem;
+  font-size: var(--step--1);
+  color: var(--ink-soft);
+}
+
+.empty {
+  margin: 0;
+  font-size: var(--step--1);
+  color: var(--ink-soft);
+}
+
+/* Ranked bars */
+.barlist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.barlist li {
+  display: grid;
+  grid-template-columns: minmax(7rem, 11rem) 1fr 2.5rem;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: var(--step--1);
+}
+
+.barlist-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.barlist-track {
+  height: 12px;
+  border-radius: 4px;
+  background: var(--mist);
+}
+
+.barlist-bar {
+  display: block;
+  height: 100%;
+  min-width: 3px;
+  border-radius: 4px;
+  background: var(--terrace-3);
+}
+
+.barlist li:hover .barlist-bar {
+  background: var(--terrace-1);
+}
+
+.barlist-value {
+  text-align: right;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Questions per day */
+.daychart {
+  display: grid;
+  grid-template-columns: 2rem 1fr;
+  gap: 0.4rem;
+}
+
+.daychart-axis {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 180px;
+  font-size: 0.72rem;
+  color: var(--ink-soft);
+  text-align: right;
+}
+
+.daychart-plot {
+  position: relative;
+  min-width: 0;
+}
+
+.daychart-grid span {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--line);
+}
+
+.daychart-grid {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 180px;
+}
+
+.daychart-bars {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 180px;
+}
+
+.daychart-col {
+  position: relative;
+  flex: 1;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  cursor: default;
+}
+
+.daychart-bar {
+  width: 100%;
+  min-height: 0;
+  border-radius: 4px 4px 0 0;
+  background: var(--terrace-3);
+}
+
+.daychart-col.is-hover .daychart-bar {
+  background: var(--terrace-1);
+}
+
+.daychart-tip {
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  background: var(--ink);
+  color: var(--white);
+  font-size: 0.75rem;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.daychart-col:first-child .daychart-tip { left: 0; transform: none; }
+.daychart-col:last-child .daychart-tip { left: auto; right: 0; transform: none; }
+
+.daychart-x {
+  display: flex;
+  gap: 2px;
+  margin-top: 0.3rem;
+  font-size: 0.7rem;
+  color: var(--ink-soft);
+}
+
+.daychart-x span {
+  flex: 1;
+  overflow: visible;
+  white-space: nowrap;
+}
+
+/* Tables */
+.table-wrap {
+  overflow-x: auto;
+}
+
+.insights table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--step--1);
+}
+
+.insights th {
+  text-align: left;
+  padding: 0.4rem 0.6rem;
+  border-bottom: 2px solid var(--line);
+  color: var(--ink-soft);
+  font-size: 0.78rem;
+}
+
+.insights td {
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+
+.q-cell {
+  max-width: 34rem;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.75rem;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--white);
+  font-size: var(--step--1);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.sidebar-link:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+@media (max-width: 760px) {
+  .insights-grid {
+    grid-template-columns: 1fr;
+    padding: 1rem 0.75rem 2rem;
+  }
+
+  .kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .insights-head {
+    padding: 0.75rem;
+  }
+}

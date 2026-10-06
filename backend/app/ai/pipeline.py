@@ -59,8 +59,10 @@ def _search(query: str, language: str, ctx: QuestionContext,
     return retriever.retrieve_many(llm.embed(queries), ctx.crop)
 
 
-def answer_question(req: AskRequest, photo_note: Optional[str] = None) -> AskResponse:
-    """photo_note: the photo diagnosis text when the farmer sent a photo (see vision.py)."""
+def answer_question(req: AskRequest, photo_note: Optional[str] = None,
+                    photo_problem: Optional[str] = None) -> AskResponse:
+    """photo_note: the photo diagnosis text when the farmer sent a photo (see vision.py).
+    photo_problem: the short diagnosis (e.g. "late blight"), logged for the insights page."""
     s = get_settings()
     start = time.perf_counter()
     request_id = str(uuid.uuid4())
@@ -91,6 +93,8 @@ def answer_question(req: AskRequest, photo_note: Optional[str] = None) -> AskRes
     flags: list[str] = [] if req.channel == "api" else [f"channel:{req.channel}"]
     if photo_note:
         flags.append("photo")
+        if photo_problem:
+            flags.append(f"photo:{photo_problem.strip().lower()[:60]}")
     status = "ok"
     answered_by = s.llm_model
     # Short SMS answers are cached separately from full answers.

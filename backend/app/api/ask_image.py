@@ -44,7 +44,8 @@ def ask_image(image: UploadFile = File(..., description="JPEG, PNG or WebP photo
     res = answer_question(
         AskRequest(question=question or _DEFAULT_QUESTION[lang], language=lang,
                    session_id=session_id),
-        photo_note=diagnosis.as_context())
+        photo_note=diagnosis.as_context(),
+        photo_problem=diagnosis.problem if diagnosis.is_plant else None)
     res.photo = PhotoDiagnosis(**dataclasses.asdict(diagnosis))
     res.latency_ms += vision_ms
     return res

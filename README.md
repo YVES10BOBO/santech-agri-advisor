@@ -81,20 +81,51 @@ See [backend/app/channels/README.md](backend/app/channels/README.md) (Africa's T
 docker compose up --build
 ```
 
+### One-click start (Windows)
+`start-all.bat` starts the API and the web chat in their own windows; `stop-all.bat` stops them.
+
+## What we built (summary)
+
+| Area | What it does | Where |
+|---|---|---|
+| Secure API | `/ask`, `/ask-image`, `/transcribe`, `/speak`, `/insights`, `/health`, `/version`; `X-API-Key`; model + prompt version (`p-0.4.1`) on every answer | `backend/app/api/` |
+| AI pipeline | Language detection, crop/topic/season extraction, conversation memory, Kinyarwanda question translated to English before search, bilingual retrieval, answer cache, automatic fallback models, answers without documents if search fails (flagged) | `backend/app/ai/pipeline.py` |
+| Grounding + safety | Answers built only from retrieved excerpts with sources; markdown removed; PPE, label and "ask your umurenge agronomist" notes added automatically; short notes for SMS | `prompts.py`, `guardrails.py` |
+| Knowledge base | 21 Rwanda-focused documents (RAB, MINAGRI, CGIAR, CIP, FAO, CIAT...) in Supabase pgvector, plus a Kinyarwanda glossary | `data/`, `scripts/ingest.py` |
+| Photo diagnosis | Farmer sends a photo; vision model names the likely pest/disease, then the normal grounded answer follows | `vision.py`, `/ask-image` |
+| Voice | Speech-to-text (Kinyarwanda/English) with a mic button; text-to-speech "listen" button on every answer | `speech.py`, `tts.py` |
+| USSD + SMS | Feature-phone menu (Kinyarwanda/English), answer delivered by SMS (Africa's Talking sandbox) | `backend/app/channels/` |
+| Web chat | Kinyarwanda/English, chat history sidebar, photo and mic buttons, Imigongo design | `frontend/web/` |
+| MINAGRI/RAB Insights | Dashboard at `/insights`: questions per day, by crop/topic/language/channel, pests found in photos, knowledge gaps (questions with no matching document), latest questions. No names or phone numbers | `InsightsDashboard.tsx`, `backend/app/db/insights.py` |
+| Benchmark | 50 questions (3 crops x 8 topics, English + Kinyarwanda) with scorecard and CSV for agronomist scoring | `scripts/run_tests.py`, `tests/questions.csv` |
+| Tests | 25 pytest tests, no network or database needed | `tests/` |
+
 ## Build status
-- [x] Secure API: `/ask`, `/health`, `/version`, API key; model and prompt version on every answer
-- [x] AI pipeline: language detection, crop/topic extraction, conversation memory,
-      bilingual retrieval (Kinyarwanda + English), Rwanda season awareness, guardrails, fallbacks
-- [x] Provider-independent LLM layer with automatic fallback models
-- [x] Knowledge base: 17+ Rwanda-focused documents (RAB, CGIAR, CIP, FAO, CIAT...)
-- [x] Web chat (Kinyarwanda / English)
-- [x] USSD + SMS channels (Africa's Talking)
+- [x] Secure API with versioning, fallbacks and request logging
+- [x] Kinyarwanda-first grounded RAG pipeline with safety guardrails
+- [x] Knowledge base (21 documents) + glossary
+- [x] Web chat with history, photo and voice
+- [x] Photo-based pest and disease identification
+- [x] Kinyarwanda voice (speech-to-text, text-to-speech)
+- [x] USSD + SMS channels (Africa's Talking sandbox)
+- [x] MINAGRI/RAB Insights dashboard
 - [x] Mini benchmark with English/Kinyarwanda scorecard
-- [ ] Photo-based pest and disease identification
-- [ ] Kinyarwanda voice (speech-to-text, text-to-speech)
-- [ ] Rwanda hosting
+- [ ] Full 50-question benchmark run with working embeddings
+- [ ] SMS shortcode callback (incoming SMS) in Africa's Talking
+- [ ] Rwanda hosting (local data centre, Law No. 058/2021 data residency)
+- [ ] Dashboards for extension officers, cooperatives and farmers (roadmap)
+- [ ] Input & market access use case (roadmap)
+- [ ] Flutter mobile app (planned)
+
+## Known limitations
+- Free Gemini tier: 1,000 embeddings per day. When it runs out, answers come without document
+  search and are flagged `retrieval_failed`. Fix: paid Google billing or a local embedding model.
+  The free tier must not be used for C4IR private data.
+- Insights figures currently include our own test and benchmark questions (pilot data).
+- Demo photos in `docs/demo-photos/` are from Wikimedia Commons; credit them when shown.
 
 ## Review needed
 - Kinyarwanda wording (UI strings, USSD menu, safety notes, `tests/questions.csv`) must be
   reviewed by a native speaker.
 - Expected answers and numbers must be validated by an agronomist.
+- Rotate the Gemini key and the webhook token after the demo.

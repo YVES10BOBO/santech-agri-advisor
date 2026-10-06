@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import type { Conversation } from "@/lib/history";
 import { USSD_CODE, type Strings } from "@/lib/strings";
 import type { Language } from "@/lib/types";
@@ -92,6 +93,12 @@ export default function Sidebar({
         </nav>
 
         <div className="sidebar-footer">
+          <Link href="/insights" className="sidebar-link">
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+              <path fill="currentColor" d="M4 19h16v2H2V3h2v16Zm3-2V10h3v7H7Zm5 0V6h3v11h-3Zm5 0v-4h3v4h-3Z" />
+            </svg>
+            {t.insightsLink}
+          </Link>
           <div className="channel-card">
             <p className="channel-title">
               <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">

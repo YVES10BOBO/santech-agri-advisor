@@ -62,6 +62,7 @@ export const strings = {
     audioFailed: "Amajwi ntabonetse, ongera ugerageze",
     photoNotKept: "(ifoto ntiyabitswe)",
     developedBy: "Byakozwe na",
+    insightsLink: "Ishusho ya MINAGRI / RAB",
   },
   en: {
     brand: "Farm Advisor",
@@ -123,6 +124,7 @@ export const strings = {
     audioFailed: "Audio not available, try again",
     photoNotKept: "(photo not saved)",
     developedBy: "Developed by",
+    insightsLink: "Insights for MINAGRI / RAB",
   },
 } satisfies Record<Language, Record<string, string>>;
 
