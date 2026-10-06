@@ -7,6 +7,7 @@ Vercel > Settings > Environment Variables online).
 Usage, from the project root:
     python scripts/seed_users.py            # writes new accounts into frontend/web/.env.local
     python scripts/seed_users.py --print    # only prints them, changes nothing
+    python scripts/seed_users.py --password "Demo2026@"   # same password for every account
 
 Run it yourself: the passwords are printed only in your terminal. Running it again makes
 new passwords (old ones stop working once the web app restarts or Vercel redeploys).
@@ -43,9 +44,21 @@ def set_line(text: str, key: str, value: str) -> str:
     return text.rstrip("\n") + f"\n{line}\n"
 
 
+def shared_password() -> str | None:
+    """The --password value, if given: one password for every account (demo use)."""
+    if "--password" not in sys.argv:
+        return None
+    i = sys.argv.index("--password")
+    pw = sys.argv[i + 1] if i + 1 < len(sys.argv) else ""
+    if len(pw) < 8 or ":" in pw or ";" in pw:
+        sys.exit("--password needs at least 8 characters and no ':' or ';'.")
+    return pw
+
+
 def main() -> None:
     only_print = "--print" in sys.argv
-    creds = [(user, password(), role, note) for user, role, note in ACCOUNTS]
+    same = shared_password()
+    creds = [(user, same or password(), role, note) for user, role, note in ACCOUNTS]
     auth_users = ";".join(f"{u}:{p}:{r}" for u, p, r, _ in creds)
 
     print("\nDashboard accounts (keep these private; send each person only their own):\n")
