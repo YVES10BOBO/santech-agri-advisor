@@ -5,7 +5,7 @@
 // and a way to escalate recurring issues to MINAGRI/RAB.
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { BarList, DashboardHead, DashboardNav, labelFor, Tile, TOPICS, type Row } from "./DashboardParts";
+import { BarList, DashboardHead, DashboardNav, labelFor, Tile, TOPICS, useMe, type Row } from "./DashboardParts";
 import Icon from "./Icon";
 import LanguageToggle from "./LanguageToggle";
 import type { Escalation } from "./InsightsDashboard";
@@ -177,11 +177,16 @@ export default function ExtensionDashboard() {
   const t = TEXT[language];
   const label = labelFor(language);
 
+  const me = useMe();
   useEffect(() => {
     try {
       setOfficer(localStorage.getItem(OFFICER_KEY) ?? "");
     } catch {}
   }, []);
+  // The officer's name defaults to their login name.
+  useEffect(() => {
+    if (me) setOfficer((cur) => cur || me.user);
+  }, [me]);
 
   const name = officer.trim();
   const load = useCallback(() => {

@@ -117,7 +117,8 @@ docker compose up --build
 - [ ] Full 50-question benchmark run with working embeddings
 - [ ] SMS shortcode callback (incoming SMS) in Africa's Talking
 - [ ] Rwanda hosting (local data centre, Law No. 058/2021 data residency)
-- [ ] Logins and roles for officers and MINAGRI/RAB (today the dashboards sit behind the API key only)
+- [x] Logins for extension officers and MINAGRI/RAB (accounts in the `AUTH_USERS` setting; farmers never log in)
+- [ ] Per-user accounts managed in the database, password reset
 - [ ] Weather alerts and real input/market data (roadmap)
 - [ ] Input & market access use case (roadmap)
 - [ ] Flutter mobile app (planned)

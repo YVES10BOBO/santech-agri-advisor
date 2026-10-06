@@ -1828,3 +1828,79 @@ textarea {
     display: none;
   }
 }
+
+/* ---------- Login (extension officers, MINAGRI/RAB) ---------- */
+.login-page {
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+
+.login-card {
+  width: min(26rem, 100%);
+  padding: 1.75rem;
+  border-radius: var(--radius);
+  background: var(--white);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+}
+
+.login-card h1 {
+  margin: 1rem 0 0.25rem;
+  font-size: var(--step-2);
+  color: var(--terrace-1);
+}
+
+.login-card .panel-hint {
+  margin: 0 0 1.25rem;
+}
+
+.login-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.login-farmer {
+  margin: 1.25rem 0 0;
+  font-size: var(--step--1);
+  color: var(--ink-soft);
+}
+
+.login-farmer a {
+  color: var(--terrace-2);
+  font-weight: 700;
+}
+
+.dash-user {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex: none;
+  margin-left: auto;
+  padding-left: 0.75rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: var(--step--1);
+}
+
+.dash-user-name {
+  max-width: 10rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dash-user button {
+  font: inherit;
+  font-weight: 700;
+  padding: 0.3rem 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--white);
+  cursor: pointer;
+}
+
+.dash-user button:hover {
+  background: rgba(255, 255, 255, 0.12);
+}

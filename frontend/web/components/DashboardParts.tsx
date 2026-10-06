@@ -2,6 +2,7 @@
 
 // Pieces shared by the three dashboards (farmer, extension officer, MINAGRI/RAB).
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import Icon, { type IconName } from "./Icon";
 import type { Language } from "@/lib/types";
 
@@ -79,8 +80,31 @@ const NAV: { href: string; icon: IconName; label: Record<Language, string> }[] =
   { href: "/insights", icon: "chart", label: { rw: "MINAGRI / RAB", en: "MINAGRI / RAB" } },
 ];
 
-/** One row of links between the chat and the three dashboards. */
+export interface Me {
+  user: string;
+  role: "extension" | "minagri";
+}
+
+/** The logged-in officer or MINAGRI/RAB user, or null (farmers never log in). */
+export function useMe(): Me | null {
+  const [me, setMe] = useState<Me | null>(null);
+  useEffect(() => {
+    fetch("/api/login", { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then(setMe)
+      .catch(() => setMe(null));
+  }, []);
+  return me;
+}
+
+async function logout() {
+  await fetch("/api/login", { method: "DELETE" }).catch(() => undefined);
+  window.location.assign("/login");
+}
+
+/** One row of links between the chat and the three dashboards, plus who is logged in. */
 export function DashboardNav({ current, language }: { current: string; language: Language }) {
+  const me = useMe();
   return (
     <nav className="dash-nav" aria-label={language === "rw" ? "Imbonerahamwe" : "Dashboards"}>
       {NAV.map((n) => (
@@ -94,6 +118,15 @@ export function DashboardNav({ current, language }: { current: string; language:
           {n.label[language]}
         </Link>
       ))}
+      {me && (
+        <span className="dash-user">
+          <Icon name="badge" size={16} />
+          <span className="dash-user-name">{me.user}</span>
+          <button type="button" onClick={logout}>
+            {language === "rw" ? "Sohoka" : "Log out"}
+          </button>
+        </span>
+      )}
     </nav>
   );
 }

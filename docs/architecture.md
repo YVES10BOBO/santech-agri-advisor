@@ -51,8 +51,11 @@ PostgreSQL + pgvector (Supabase today)
   changes, in line with Rwanda's data protection law (Law No. 058/2021).
 
 ## Roadmap
-1. **Now:** text advisory API (Kinyarwanda + English), web chat, USSD/SMS, mini benchmark.
-2. **After shortlisting:** C4IR data integration and re-benchmark, photo pest and disease
-   identification, agronomist review loop, insights dashboard for MINAGRI/RAB.
-3. **RFP stage:** Rwanda hosting, self-hosted open model option, Kinyarwanda voice (IVR),
-   WhatsApp, offline-tolerant mobile app for extension officers, weather alerts.
+1. **Now:** text advisory API (Kinyarwanda + English), web chat, voice in/out, photo pest and
+   disease identification, USSD/SMS, farm-profile personalisation, dashboards for farmers,
+   extension officers and MINAGRI/RAB, mini benchmark.
+2. **After shortlisting:** C4IR data integration and re-benchmark, agronomist and
+   native-speaker review loop.
+3. **RFP stage:** Rwanda hosting, self-hosted open model option, logins and roles,
+   IVR and WhatsApp, offline-tolerant mobile app for extension officers, weather alerts,
+   input and market data.
