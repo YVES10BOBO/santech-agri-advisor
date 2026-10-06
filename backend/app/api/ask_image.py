@@ -8,7 +8,7 @@ from pydantic import ValidationError
 
 from app.ai import vision
 from app.ai.language import detect_language
-from app.ai.pipeline import answer_question
+from app.ai.pipeline import NOT_A_PLANT, answer_question
 from app.core.security import verify_api_key
 from app.schemas.ask import AskRequest, AskResponse, FarmerProfile, PhotoDiagnosis
 
@@ -55,7 +55,7 @@ def ask_image(image: UploadFile = File(..., description="JPEG, PNG or WebP photo
         AskRequest(question=question or _DEFAULT_QUESTION[lang], language=lang,
                    session_id=session_id, profile=farm),
         photo_note=diagnosis.as_context(),
-        photo_problem=diagnosis.problem if diagnosis.is_plant else None)
+        photo_problem=diagnosis.problem if diagnosis.is_plant else NOT_A_PLANT)
     res.photo = PhotoDiagnosis(**dataclasses.asdict(diagnosis))
     res.latency_ms += vision_ms
     return res

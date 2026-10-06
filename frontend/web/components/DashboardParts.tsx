@@ -20,7 +20,7 @@ export const LABELS: Record<Language, Record<string, string>> = {
     not_detected: "Ntibyamenyekanye", rw: "Ikinyarwanda", en: "Icyongereza",
     web_api: "Urubuga / API", sms_ussd: "SMS / USSD", photo: "Ifoto",
     open: "Gifunguye", reviewing: "Kirimo gusuzumwa", resolved: "Cyakemutse",
-    low: "Gito", medium: "Kiringaniye", high: "Gikomeye",
+    low: "Gito", medium: "Kiringaniye", high: "Gikomeye", not_a_plant: "Si igihingwa",
   },
   en: {
     maize: "Maize", beans: "Beans", potato: "Irish potato", general: "General", other: "Other",
@@ -31,7 +31,7 @@ export const LABELS: Record<Language, Record<string, string>> = {
     not_detected: "Not detected", rw: "Kinyarwanda", en: "English",
     web_api: "Web / API", sms_ussd: "SMS / USSD", photo: "Photo",
     open: "Open", reviewing: "Reviewing", resolved: "Resolved",
-    low: "Low", medium: "Medium", high: "High",
+    low: "Low", medium: "Medium", high: "High", not_a_plant: "Not a plant",
   },
 };
 

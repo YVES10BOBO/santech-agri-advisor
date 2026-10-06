@@ -282,7 +282,7 @@ export default function InsightsDashboard() {
           </section>
           <section className="panel panel-wide">
             <h2>{t.photoProblems}</h2>
-            <BarList rows={data.photo_problems} label={(k) => k} none={t.photoEmpty} />
+            <BarList rows={data.photo_problems} label={(k) => (k === "not_a_plant" ? label(k) : k)} none={t.photoEmpty} />
           </section>
 
           <section className="panel panel-wide">

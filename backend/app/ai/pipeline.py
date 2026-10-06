@@ -59,6 +59,10 @@ def _search(query: str, language: str, ctx: QuestionContext,
     return retriever.retrieve_many(llm.embed(queries), ctx.crop)
 
 
+# Logged instead of a diagnosis when the photo shows no plant (insights page).
+NOT_A_PLANT = "not_a_plant"
+
+
 def answer_question(req: AskRequest, photo_note: Optional[str] = None,
                     photo_problem: Optional[str] = None) -> AskResponse:
     """photo_note: the photo diagnosis text when the farmer sent a photo (see vision.py).
@@ -85,7 +89,8 @@ def answer_question(req: AskRequest, photo_note: Optional[str] = None,
         # The photo tells us the crop and problem; it also guides the document search.
         photo_ctx = extract_context(photo_note)
         ctx.crop = photo_ctx.crop or ctx.crop
-        ctx.dimension = "pest_disease"
+        if photo_problem != NOT_A_PLANT:
+            ctx.dimension = "pest_disease"
         retrieval_query = f"{question}\n{photo_note}"
     model_question = f"{question}\n\n{photo_note}" if photo_note else question
 
