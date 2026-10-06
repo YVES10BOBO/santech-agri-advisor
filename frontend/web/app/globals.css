@@ -1349,3 +1349,482 @@ textarea {
     padding: 0.75rem;
   }
 }
+
+/* ---------- Shared dashboard pieces (farmer, extension officer, MINAGRI/RAB) ---------- */
+.sidebar-link + .sidebar-link {
+  margin-top: 0.35rem;
+}
+
+.dash-nav {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.5rem 1.5rem;
+  overflow-x: auto;
+  background: var(--terrace-1);
+  scrollbar-width: none;
+}
+
+.dash-nav a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: var(--step--1);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.dash-nav a:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--white);
+}
+
+.dash-nav a.is-active {
+  background: var(--maize);
+  color: var(--terrace-1);
+}
+
+.kpi-inline {
+  margin: 0 0 0.75rem;
+  color: var(--ink-soft);
+}
+
+.kpi-inline strong {
+  font-size: 1.5rem;
+  color: var(--terrace-1);
+}
+
+.panel h2.h2-gap {
+  margin-top: 1.25rem;
+}
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tabs button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--white);
+  color: var(--terrace-2);
+  font-weight: 700;
+  font-size: var(--step--1);
+  cursor: pointer;
+}
+
+.tabs button:hover {
+  background: var(--leaf-wash);
+}
+
+.tabs button.is-active {
+  background: var(--terrace-2);
+  border-color: var(--terrace-2);
+  color: var(--white);
+}
+
+/* Forms */
+.dash-form {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.dash-form label,
+.check-row legend {
+  display: grid;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+
+.dash-form input,
+.dash-form select,
+.dash-form textarea,
+.officer-input,
+.reply-input {
+  width: 100%;
+  font: inherit;
+  font-size: var(--step--1);
+  font-weight: 400;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--white);
+  color: var(--ink);
+}
+
+.dash-form textarea {
+  resize: vertical;
+}
+
+.dash-form input:focus,
+.dash-form select:focus,
+.dash-form textarea:focus,
+.officer-input:focus,
+.reply-input:focus {
+  outline: none;
+  border-color: var(--terrace-3);
+  box-shadow: 0 0 0 3px rgba(61, 125, 69, 0.15);
+}
+
+.officer-input {
+  width: 12rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 0.75rem;
+}
+
+.check-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.check-row legend {
+  margin-bottom: 0.35rem;
+}
+
+.dash-form label.check {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: var(--step--1);
+  color: var(--ink);
+}
+
+.dash-form label.check input {
+  width: 1.1rem;
+  height: 1.1rem;
+  accent-color: var(--terrace-3);
+}
+
+.form-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.primary-button,
+.ghost-button,
+.row-actions button {
+  font: inherit;
+  font-weight: 700;
+  font-size: var(--step--1);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.primary-button {
+  padding: 0.55rem 1.4rem;
+  border: 0;
+  background: var(--maize);
+  color: var(--terrace-1);
+}
+
+.primary-button:hover {
+  background: var(--maize-dark);
+}
+
+.primary-button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.ghost-button {
+  padding: 0.5rem 1.1rem;
+  border: 1px solid var(--line);
+  background: var(--white);
+  color: var(--ink-soft);
+}
+
+.form-ok {
+  color: var(--terrace-2);
+  font-size: var(--step--1);
+  font-weight: 700;
+}
+
+.form-error {
+  color: var(--error);
+  font-size: var(--step--1);
+}
+
+/* Tool links (chat, photo second opinion) */
+.tool-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--mist);
+  color: var(--terrace-1);
+  text-decoration: none;
+}
+
+.tool-card:hover {
+  background: var(--leaf-wash);
+}
+
+.tool-card span {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.tool-card small {
+  color: var(--ink-soft);
+  font-size: 0.8rem;
+}
+
+/* Status chips: the text label is always shown; color only supports it */
+.chip {
+  display: inline-block;
+  padding: 0.1rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+  background: var(--leaf-wash);
+  color: var(--terrace-1);
+}
+
+.chip.st-open { background: #fdecc8; color: #7a4f00; }
+.chip.st-reviewing { background: #dceafb; color: #1d4f8a; }
+.chip.st-resolved { background: #dcefdc; color: #1f5a2a; }
+.chip.sev-high { background: #f8dcd8; color: var(--error); }
+.chip.sev-medium { background: #fdecc8; color: #7a4f00; }
+.chip.sev-low { background: var(--leaf-wash); color: var(--ink-soft); }
+
+.cell-sub {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+}
+
+.cell-reply {
+  display: block;
+  margin-top: 0.4rem;
+  padding: 0.4rem 0.6rem;
+  border-left: 3px solid var(--terrace-3);
+  background: var(--mist);
+  font-size: 0.82rem;
+}
+
+.actions-cell {
+  min-width: 13rem;
+}
+
+.reply-input {
+  margin-bottom: 0.4rem;
+}
+
+.row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.row-actions button {
+  padding: 0.3rem 0.75rem;
+  border: 1px solid var(--terrace-3);
+  background: var(--white);
+  color: var(--terrace-2);
+  font-size: 0.78rem;
+}
+
+.row-actions button:hover {
+  background: var(--leaf-wash);
+}
+
+.row-actions button:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+/* Lists */
+.esc-list,
+.doc-list,
+.reach-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.esc-list li {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.esc-list li p {
+  margin: 0.35rem 0 0.15rem;
+}
+
+.esc-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.esc-top .cell-sub {
+  margin: 0;
+}
+
+.doc-list {
+  max-height: 28rem;
+  overflow-y: auto;
+}
+
+.doc-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--line);
+  font-size: var(--step--1);
+}
+
+.doc-title {
+  display: grid;
+}
+
+.doc-title a {
+  color: var(--terrace-2);
+}
+
+.doc-title small {
+  color: var(--ink-soft);
+  font-size: 0.75rem;
+}
+
+.reach-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.55rem 0;
+  font-size: var(--step--1);
+  color: var(--terrace-1);
+}
+
+.privacy-note {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+
+/* Farmer page */
+.profile-state {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: -0.25rem 0 0.9rem;
+  padding: 0.45rem 0.7rem;
+  border-radius: 10px;
+  background: #fdecc8;
+  color: #7a4f00;
+  font-size: var(--step--1);
+  font-weight: 700;
+}
+
+.profile-state.is-on {
+  background: #dcefdc;
+  color: #1f5a2a;
+}
+
+.season-badge {
+  display: inline-block;
+  margin: 0 0 0.9rem;
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  background: var(--terrace-2);
+  color: var(--white);
+  font-size: var(--step--1);
+  font-weight: 700;
+}
+
+.quick-group {
+  margin-bottom: 0.9rem;
+}
+
+.quick-crop {
+  margin: 0 0 0.35rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.quick-q {
+  display: block;
+  margin-bottom: 0.35rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--mist);
+  color: var(--terrace-1);
+  font-size: var(--step--1);
+  text-decoration: none;
+}
+
+.quick-q:hover {
+  background: var(--leaf-wash);
+  border-color: var(--terrace-4);
+}
+
+/* "My farm" chip in the chat top bar */
+.farm-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  max-width: 11rem;
+  padding: 0.35rem 0.75rem;
+  border: 1px dashed var(--terrace-4);
+  border-radius: 999px;
+  color: var(--terrace-2);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.farm-chip span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.farm-chip.is-on {
+  border-style: solid;
+  background: var(--leaf-wash);
+}
+
+@media (max-width: 760px) {
+  .dash-nav {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .officer-input {
+    width: 100%;
+  }
+
+  .farm-chip span {
+    display: none;
+  }
+}

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import LanguageToggle from "./LanguageToggle";
 import MessageBubble from "./MessageBubble";
@@ -9,6 +10,7 @@ import Icon from "./Icon";
 import ThinkingIndicator from "./ThinkingIndicator";
 import { askQuestion, askWithPhoto } from "@/lib/api";
 import { loadConversations, saveConversations, titleFrom, type Conversation } from "@/lib/history";
+import { hasProfile, loadProfile } from "@/lib/profile";
 import { starterQuestions, strings, USSD_CODE, type Crop } from "@/lib/strings";
 import type { ChatMessage, Language } from "@/lib/types";
 
@@ -32,12 +34,21 @@ export default function ChatWindow() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+  const [farm, setFarm] = useState<string | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const t = strings[language];
 
   useEffect(() => {
     setConversations(loadConversations());
+    const profile = loadProfile();
+    setFarm(hasProfile(profile) ? (profile.district ?? "") : null);
+    // A question picked on the "My farm" page arrives as ?q=...: put it in the box.
+    const q = new URLSearchParams(window.location.search).get("q");
+    if (q) {
+      setInput(q.slice(0, 2000));
+      window.history.replaceState(null, "", "/chat");
+    }
     try {
       setCollapsed(localStorage.getItem(SIDEBAR_KEY) === "collapsed");
     } catch {
@@ -216,6 +227,14 @@ export default function ChatWindow() {
               {t.online}
             </p>
           </div>
+          <Link
+            href="/farmer"
+            className={`farm-chip${farm !== null ? " is-on" : ""}`}
+            title={farm !== null ? t.farmOn : t.farmOff}
+          >
+            <Icon name="farm" size={16} />
+            <span>{farm ? farm : t.myFarm}</span>
+          </Link>
           <LanguageToggle value={language} onChange={setLanguage} />
         </header>
 

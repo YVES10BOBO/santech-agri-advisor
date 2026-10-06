@@ -1,3 +1,4 @@
+import { loadProfile, profileForApi } from "./profile";
 import type { AskResponse, Language } from "./types";
 
 export async function askQuestion(
@@ -8,7 +9,12 @@ export async function askQuestion(
   const res = await fetch("/api/ask", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ question, language, session_id: sessionId }),
+    body: JSON.stringify({
+      question,
+      language,
+      session_id: sessionId,
+      profile: profileForApi(loadProfile()),
+    }),
   });
   if (!res.ok) {
     const detail = await res.text();
@@ -28,6 +34,8 @@ export async function askWithPhoto(
   form.append("question", question);
   form.append("language", language);
   if (sessionId) form.append("session_id", sessionId);
+  const profile = profileForApi(loadProfile());
+  if (profile) form.append("profile", JSON.stringify(profile));
   const res = await fetch("/api/ask-image", { method: "POST", body: form });
   if (!res.ok) {
     const detail = await res.text();

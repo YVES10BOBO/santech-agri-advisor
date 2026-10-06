@@ -35,7 +35,8 @@ copy backend\.env.example backend\.env      # then fill it in (see below)
 - `API_ACCESS_KEY`: the key clients (C4IR) send in the `X-API-Key` header.
 
 ### 2. Database
-Create a Supabase project, put its connection string in `DATABASE_URL`, then:
+Create a Supabase project, put its connection string in `DATABASE_URL`, then run all migrations
+(including `004_extension_tables.sql` for the extension officer tools):
 ```powershell
 python scripts\migrate.py
 ```
@@ -88,32 +89,36 @@ docker compose up --build
 
 | Area | What it does | Where |
 |---|---|---|
-| Secure API | `/ask`, `/ask-image`, `/transcribe`, `/speak`, `/insights`, `/health`, `/version`; `X-API-Key`; model + prompt version (`p-0.4.1`) on every answer | `backend/app/api/` |
+| Secure API | `/ask`, `/ask-image`, `/transcribe`, `/speak`, `/insights`, `/extension/*`, `/health`, `/version`; `X-API-Key`; model + prompt version (`p-0.5.0`) on every answer | `backend/app/api/` |
 | AI pipeline | Language detection, crop/topic/season extraction, conversation memory, Kinyarwanda question translated to English before search, bilingual retrieval, answer cache, automatic fallback models, answers without documents if search fails (flagged) | `backend/app/ai/pipeline.py` |
 | Grounding + safety | Answers built only from retrieved excerpts with sources; markdown removed; PPE, label and "ask your umurenge agronomist" notes added automatically; short notes for SMS | `prompts.py`, `guardrails.py` |
-| Knowledge base | 21 Rwanda-focused documents (RAB, MINAGRI, CGIAR, CIP, FAO, CIAT...) in Supabase pgvector, plus a Kinyarwanda glossary | `data/`, `scripts/ingest.py` |
+| Knowledge base | 17 Rwanda-focused documents ingested (RAB, MINAGRI, CGIAR, CIP, FAO, CIAT...; 4 more listed, not yet ingested) in Supabase pgvector, plus a Kinyarwanda glossary | `data/`, `scripts/ingest.py` |
 | Photo diagnosis | Farmer sends a photo; vision model names the likely pest/disease, then the normal grounded answer follows | `vision.py`, `/ask-image` |
 | Voice | Speech-to-text (Kinyarwanda/English) with a mic button; text-to-speech "listen" button on every answer | `speech.py`, `tts.py` |
 | USSD + SMS | Feature-phone menu (Kinyarwanda/English), answer delivered by SMS (Africa's Talking sandbox) | `backend/app/channels/` |
 | Web chat | Kinyarwanda/English, chat history sidebar, photo and mic buttons, Imigongo design | `frontend/web/` |
-| MINAGRI/RAB Insights | Dashboard at `/insights`: questions per day, by crop/topic/language/channel, pests found in photos, knowledge gaps (questions with no matching document), latest questions. No names or phone numbers | `InsightsDashboard.tsx`, `backend/app/db/insights.py` |
+| Farmer page ("My farm") | `/farmer`: farm profile (district, size, crops, irrigation, livestock, notes) kept on the phone and sent with every question so answers fit the farm; questions for the current season; inputs & market question; USSD/SMS reminders | `FarmerDashboard.tsx`, `lib/profile.ts`, `prompts.py` |
+| Extension officer page | `/extension`: digital field records, escalation of recurring issues to MINAGRI/RAB (with their reply), photo second opinion, knowledge refresher (AI chat + document list). No farmer phone numbers stored | `ExtensionDashboard.tsx`, `backend/app/api/extension.py` |
+| MINAGRI/RAB Insights | `/insights`: questions per day, by crop/topic/language/channel, pests found in photos, knowledge gaps, field reports by topic and district, escalations they can reply to and resolve, latest questions. No names or phone numbers | `InsightsDashboard.tsx`, `backend/app/db/insights.py` |
 | Benchmark | 50 questions (3 crops x 8 topics, English + Kinyarwanda) with scorecard and CSV for agronomist scoring | `scripts/run_tests.py`, `tests/questions.csv` |
-| Tests | 25 pytest tests, no network or database needed | `tests/` |
+| Tests | 28 pytest tests, no network or database needed | `tests/` |
 
 ## Build status
 - [x] Secure API with versioning, fallbacks and request logging
 - [x] Kinyarwanda-first grounded RAG pipeline with safety guardrails
-- [x] Knowledge base (21 documents) + glossary
+- [x] Knowledge base (17 documents ingested) + glossary
 - [x] Web chat with history, photo and voice
 - [x] Photo-based pest and disease identification
 - [x] Kinyarwanda voice (speech-to-text, text-to-speech)
 - [x] USSD + SMS channels (Africa's Talking sandbox)
-- [x] MINAGRI/RAB Insights dashboard
+- [x] Dashboards for all three C4IR user groups: farmer (My farm), extension officer, MINAGRI/RAB
+- [x] Personalised answers from the farmer's profile
 - [x] Mini benchmark with English/Kinyarwanda scorecard
 - [ ] Full 50-question benchmark run with working embeddings
 - [ ] SMS shortcode callback (incoming SMS) in Africa's Talking
 - [ ] Rwanda hosting (local data centre, Law No. 058/2021 data residency)
-- [ ] Dashboards for extension officers, cooperatives and farmers (roadmap)
+- [ ] Logins and roles for officers and MINAGRI/RAB (today the dashboards sit behind the API key only)
+- [ ] Weather alerts and real input/market data (roadmap)
 - [ ] Input & market access use case (roadmap)
 - [ ] Flutter mobile app (planned)
 
@@ -122,6 +127,8 @@ docker compose up --build
   search and are flagged `retrieval_failed`. Fix: paid Google billing or a local embedding model.
   The free tier must not be used for C4IR private data.
 - Insights figures currently include our own test and benchmark questions (pilot data).
+- Fertilizer and manure quantities in answers must be checked by an agronomist (one test answer
+  gave a manure rate that looks about 10x too low).
 - Demo photos in `docs/demo-photos/` are from Wikimedia Commons; credit them when shown.
 
 ## Review needed

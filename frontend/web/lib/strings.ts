@@ -63,6 +63,12 @@ export const strings = {
     photoNotKept: "(ifoto ntiyabitswe)",
     developedBy: "Byakozwe na",
     insightsLink: "Ishusho ya MINAGRI / RAB",
+    farmerLink: "Umurima wanjye",
+    extensionLink: "Abajyanama b'ubuhinzi",
+    dashboards: "Imbonerahamwe",
+    myFarm: "Umurima wanjye",
+    farmOn: "Inama zihuzwa n'umurima wawe",
+    farmOff: "Uzuza ibijyanye n'umurima wawe kugira ngo inama zihuze nawo",
   },
   en: {
     brand: "Farm Advisor",
@@ -125,6 +131,12 @@ export const strings = {
     photoNotKept: "(photo not saved)",
     developedBy: "Developed by",
     insightsLink: "Insights for MINAGRI / RAB",
+    farmerLink: "My farm",
+    extensionLink: "Extension officers",
+    dashboards: "Dashboards",
+    myFarm: "My farm",
+    farmOn: "Advice is fitted to your farm",
+    farmOff: "Fill in your farm so advice fits it",
   },
 } satisfies Record<Language, Record<string, string>>;
 

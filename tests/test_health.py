@@ -54,3 +54,33 @@ def test_insights_needs_database():
     with TestClient(app) as client:
         r = client.get("/insights")
     assert r.status_code == 503
+
+
+def test_farmer_profile_goes_into_the_prompt():
+    from app.ai.context import QuestionContext
+    from app.ai.prompts import build_messages
+    from app.schemas.ask import FarmerProfile
+    profile = FarmerProfile(district="Musanze", farm_size_ha=0.3, crops=["potato"],
+                            irrigation=False)
+    msgs = build_messages("Nshyiremo ifumbire ingana iki?", "rw", QuestionContext(), [], [], [],
+                          profile=profile)
+    system = msgs[0]["content"]
+    assert "FARMER PROFILE" in system and "Musanze" in system and "0.3 ha" in system
+    assert "rain-fed" in system
+    plain = build_messages("Q", "en", QuestionContext(), [], [], [], profile=FarmerProfile())
+    assert "FARMER PROFILE" not in plain[0]["content"]
+
+
+def test_extension_tools_need_database():
+    with TestClient(app) as client:
+        assert client.get("/extension/summary").status_code == 503
+        r = client.post("/extension/escalations",
+                        json={"officer": "Agent A", "issue": "Fall armyworm in many farms"})
+        assert r.status_code == 503
+
+
+def test_field_record_rejects_phone_numbers():
+    with TestClient(app) as client:
+        r = client.post("/extension/records", json={
+            "officer": "Agent A", "farmer_ref": "0788123456", "problem": "Yellow leaves"})
+    assert r.status_code == 422

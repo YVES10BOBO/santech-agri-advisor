@@ -1,7 +1,10 @@
 """Read-only statistics over request_logs for the MINAGRI/RAB insights page."""
 from typing import Any
 
+from psycopg.errors import UndefinedTable
+
 from app.db.database import get_pool
+from app.db.extension import list_escalations
 
 TZ = "Africa/Kigali"
 
@@ -71,8 +74,31 @@ def collect(days: int) -> dict[str, Any]:
             FROM request_logs WHERE {window}
             ORDER BY created_at DESC LIMIT 12""", p)
 
+        field = _field_reports(conn, window, p)
+
+    try:
+        escalations = list_escalations(None, None, 20)
+    except UndefinedTable:
+        escalations = None  # migration 004 not run yet
+
     return {
         "days": days, "totals": totals, "per_day": per_day, "by_crop": by_crop,
         "by_topic": by_topic, "by_language": by_language, "by_channel": by_channel,
         "photo_problems": photo_problems, "knowledge_gaps": gaps, "recent": recent,
+        "field": field, "escalations": escalations,
     }
+
+
+def _field_reports(conn, window: str, p: dict) -> dict[str, Any] | None:
+    """What extension officers recorded in the field (None before migration 004)."""
+    try:
+        records = _rows(conn, f"SELECT count(*) AS n FROM field_records WHERE {window}", p)[0]["n"]
+        by_topic = _rows(conn, f"""
+            SELECT coalesce(dimension, 'not_detected') AS key, count(*) AS questions
+            FROM field_records WHERE {window} GROUP BY 1 ORDER BY 2 DESC LIMIT 8""", p)
+        by_district = _rows(conn, f"""
+            SELECT coalesce(nullif(district, ''), 'not_detected') AS key, count(*) AS questions
+            FROM field_records WHERE {window} GROUP BY 1 ORDER BY 2 DESC LIMIT 8""", p)
+    except UndefinedTable:
+        return None
+    return {"records": records, "by_topic": by_topic, "by_district": by_district}

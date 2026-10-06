@@ -91,6 +91,8 @@ def answer_question(req: AskRequest, photo_note: Optional[str] = None,
 
     chunks: list[RetrievedChunk] = []
     flags: list[str] = [] if req.channel == "api" else [f"channel:{req.channel}"]
+    if req.profile is not None and not req.profile.is_empty():
+        flags.append("profile")
     if photo_note:
         flags.append("photo")
         if photo_problem:
@@ -103,7 +105,10 @@ def answer_question(req: AskRequest, photo_note: Optional[str] = None,
 
     try:
         # Photo answers are never cached: the same words can come with different photos.
-        cached = None if history or photo_note else answer_cache.get(question, cache_lang)
+        # Personalised answers (farm profile) are not cached either.
+        personal = req.profile is not None and not req.profile.is_empty()
+        cacheable = not (history or photo_note or personal)
+        cached = answer_cache.get(question, cache_lang) if cacheable else None
         if cached:
             answer, sources = cached
             flags.append("cache_hit")
@@ -116,7 +121,8 @@ def answer_question(req: AskRequest, photo_note: Optional[str] = None,
                     log.exception("Retrieval failed; answering without knowledge excerpts.")
                     flags.append(f"retrieval_failed:{type(exc).__name__}")
             messages = build_messages(model_question, language, ctx, chunks, history,
-                                      find_glossary_terms(question), req.channel)
+                                      find_glossary_terms(question), req.channel,
+                                      req.profile)
             raw = llm.chat(messages)
             answered_by = llm.last_model()
             if not raw:
@@ -128,7 +134,7 @@ def answer_question(req: AskRequest, photo_note: Optional[str] = None,
             history_answer = guardrails.strip_markdown(raw)
             flags.extend(guard_flags)
             sources = _to_sources(chunks)
-            if not history and not photo_note:
+            if cacheable:
                 answer_cache.put(question, cache_lang, (answer, sources))
     except Exception as exc:
         log.exception("Pipeline failed; returning fallback answer.")

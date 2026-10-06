@@ -8,6 +8,21 @@ Language = Literal["rw", "en"]
 Channel = Literal["api", "web", "sms"]
 
 
+class FarmerProfile(BaseModel):
+    """What the farmer told us about their farm, so advice fits what they have."""
+    district: Optional[str] = Field(None, max_length=40)
+    farm_size_ha: Optional[float] = Field(None, gt=0, le=100)
+    crops: list[Literal["maize", "beans", "potato"]] = Field(default_factory=list, max_length=3)
+    irrigation: Optional[bool] = None
+    livestock: Optional[bool] = Field(None, description="Keeps cows, goats or chickens (manure).")
+    notes: Optional[str] = Field(None, max_length=200,
+                                 description="Anything else, e.g. 'hillside, no money for fertilizer'.")
+
+    def is_empty(self) -> bool:
+        return not any([self.district, self.farm_size_ha, self.crops,
+                        self.irrigation is not None, self.livestock is not None, self.notes])
+
+
 class AskRequest(BaseModel):
     question: str = Field(..., min_length=1, max_length=2000,
                           description="Farmer question in Kinyarwanda or English.")
@@ -17,6 +32,8 @@ class AskRequest(BaseModel):
         None, description="Reuse to ask follow-up questions in the same conversation.")
     channel: Channel = Field(
         "api", description="'sms' returns a short answer for feature phones.")
+    profile: Optional[FarmerProfile] = Field(
+        None, description="Optional farm details; answers are fitted to them.")
 
 
 class Source(BaseModel):

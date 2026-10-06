@@ -4,12 +4,13 @@ import time
 from typing import Optional
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
+from pydantic import ValidationError
 
 from app.ai import vision
 from app.ai.language import detect_language
 from app.ai.pipeline import answer_question
 from app.core.security import verify_api_key
-from app.schemas.ask import AskRequest, AskResponse, PhotoDiagnosis
+from app.schemas.ask import AskRequest, AskResponse, FarmerProfile, PhotoDiagnosis
 
 router = APIRouter(tags=["advisory"])
 
@@ -25,7 +26,10 @@ _DEFAULT_QUESTION = {
 def ask_image(image: UploadFile = File(..., description="JPEG, PNG or WebP photo, max 6 MB."),
               question: str = Form("", max_length=2000),
               language: Optional[str] = Form(None),
-              session_id: Optional[str] = Form(None)) -> AskResponse:
+              session_id: Optional[str] = Form(None),
+              profile: Optional[str] = Form(None, max_length=2000,
+                                            description="FarmerProfile as JSON (optional).")
+              ) -> AskResponse:
     if image.content_type not in vision.ALLOWED_TYPES:
         raise HTTPException(status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
                             "Send a JPEG, PNG or WebP photo.")
@@ -35,6 +39,12 @@ def ask_image(image: UploadFile = File(..., description="JPEG, PNG or WebP photo
     if not data:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "The photo is empty.")
 
+    farm = None
+    if profile:
+        try:
+            farm = FarmerProfile.model_validate_json(profile)
+        except ValidationError:
+            raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "Invalid profile.")
     question = question.strip()
     lang = language if language in ("rw", "en") else (detect_language(question) if question else "rw")
     start = time.perf_counter()
@@ -43,7 +53,7 @@ def ask_image(image: UploadFile = File(..., description="JPEG, PNG or WebP photo
 
     res = answer_question(
         AskRequest(question=question or _DEFAULT_QUESTION[lang], language=lang,
-                   session_id=session_id),
+                   session_id=session_id, profile=farm),
         photo_note=diagnosis.as_context(),
         photo_problem=diagnosis.problem if diagnosis.is_plant else None)
     res.photo = PhotoDiagnosis(**dataclasses.asdict(diagnosis))
